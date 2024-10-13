@@ -88,10 +88,9 @@ export const login = async (req, res, next) => {
 
 export const getUserInfo = async (req, res) => {
   try {
-    console.log("Request received with userID:", req.userID);  // Debugging log
+    console.log("Request received with userID:", req.userID);  
 
-    const userData = await User.findById(req.userID); // Ensure req.userID exists and is correct
-
+    const userData = await User.findById(req.userID); 
     if (!userData) {
       return res.status(404).send("User with this ID not found");
     }
@@ -112,57 +111,11 @@ export const getUserInfo = async (req, res) => {
 };
 
 
-// export const updateProfile = async (req, res) => {
-//   try {
-//     const { userID } = req; // Extract 'userID' from middleware
-//     const { firstName, lastName, color } = req.body; // Destructure 'req.body' to get data
-
-//     // Log userID for debugging
-//     console.log("UserID in updateProfile:", userID);
-
-//     // Validate the required fields
-//     if (!firstName || !lastName) {
-//       return res.status(400).send("First Name, Last Name, and color are required");
-//     }
-
-//     // Check if the user exists
-//     const userData = await User.findById(userID);
-//     if (!userData) {
-//       return res.status(404).send("User not found");
-//     }
-
-//     // Update the user data in the database
-//     const updatedUser = await User.findByIdAndUpdate(
-//       userID, // Use 'userID' from the middleware
-//       {
-//         firstName,
-//         lastName,
-//         color,
-//         profileSetup: true,
-//       },
-//       { new: true, runValidators: true }
-//     );
-
-//     // Return the updated user information
-//     return res.status(200).json({
-//       id: updatedUser._id,
-//       email: updatedUser.email,
-//       profileSetup: updatedUser.profileSetup,
-//       firstName: updatedUser.firstName,
-//       lastName: updatedUser.lastName,
-//       image: updatedUser.image,
-//       color: updatedUser.color,
-//     });
-//   } catch (error) {
-//     console.error("Error updating user info:", error);
-//     return res.status(500).send("Internal server error");
-//   }
-// };
 export const updateProfile  = async (req, res) => {
-  const { userID } = req; // Get userID from request
+  const { userID } = req; 
   const { firstName, lastName, color } = req.body;
 
-  // Validate fields
+ 
   if (!firstName || !lastName ) {
     return res.status(400).send("First Name, Last Name, and color are required");
   }
