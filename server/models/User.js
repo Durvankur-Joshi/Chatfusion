@@ -26,7 +26,7 @@ image:{
 },
 color:{
     type : String,
-    required: true ,
+    required: false,
 },
 profileSetup:{
     type : Boolean,

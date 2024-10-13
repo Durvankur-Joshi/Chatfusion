@@ -1,0 +1,11 @@
+
+.env
+
+config/secrets.json
+
+node_modules/
+
+*.log
+
+
+config/database.yml
