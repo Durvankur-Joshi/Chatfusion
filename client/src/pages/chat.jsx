@@ -1,9 +1,30 @@
-import React from 'react'
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '../store';
 
 const Chat = () => {
-  return (
-    <div>This is a chat</div>
-  )
-}
+  const { userInfo } = useAppStore();
+  const navigate = useNavigate();
 
-export default Chat
+  useEffect(() => {
+    if (userInfo && !userInfo.profileSetup) {
+      // Alert if profile is incomplete
+      alert("Please complete your profile");
+      // Navigate to the profile page instead
+      navigate("/profile");
+    }
+  }, [userInfo, navigate]);
+
+  if (!userInfo) {
+    return <div>Loading user info...</div>;
+  }
+
+  return (
+    <div>
+      <h1>Welcome to the chat, {userInfo.firstName}</h1>
+      {/* Chat content */}
+    </div>
+  );
+};
+
+export default Chat;

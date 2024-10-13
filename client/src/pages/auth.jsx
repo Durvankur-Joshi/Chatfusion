@@ -1,81 +1,113 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useAppStore } from '../store'; // Import your Zustand store
+import { apiClient } from '../lib/api-client';
+import { LOGIN_ROUTES, SIGNUP_ROUTES } from '../utils/constants';
+import axios from 'axios';
+
+  
+  
+
 
 const Auth = () => {
-  const [activeTab, setActiveTab] = useState("signup")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [email, setEmail] = useState("");
+  const {setUserInfo} = useAppStore();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [activeTab, setActiveTab] = useState("signup"); // State to manage active tab
+  const navigate = useNavigate(); 
 
-  // Handle SignUp
-  const handleSignUp = async () => {
+  const validateSignup = () => {
+    if (!email.length) {
+      alert('Email is required');
+      return false;
+    }
+    if (!password.length) {
+      alert('Password is required');
+      return false;
+    }
     if (password !== confirmPassword) {
-      alert("Passwords do not match!")
-      return
+      alert('Password and confirm password do not match');
+      return false;
     }
+    return true;
+  };
 
-    try {
-      // Send POST request to register the user
-      const response = await fetch('http://localhost:8080/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          firstname: 'First', // Add firstname and other details as needed
-          lastname: 'Last',
-          image: 'default.jpg', // Placeholder image
-          color: 'blue', // Default color
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Sign Up successful!");
-      } else {
-        alert(data.message); // Show error message from the server
-      }
-    } catch (error) {
-      console.error('Error during sign up:', error);
-      alert("Sign Up failed!");
+  const validateLogin = () =>{
+    if (!email.length) {
+      alert('Email is required');
+      return false;
+    }
+    if (!password.length) {
+      alert('Password is required');
+      return false;
     }
   }
 
-  // Handle Login
+  const handleSignUp = async (event) => {
+    if (validateSignup) {
+      const response = await apiClient.post(SIGNUP_ROUTES , {email , password} , { withCredentials: true});
+
+      if (response.status == 201) {
+        setUserInfo(response.data.user);
+        navigate("/profile");
+      }
+
+      console.log(response);
+      
+    }
+  };
+
   const handleLogin = async () => {
-    try {
-      // Send POST request to login the user
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+    if (validateLogin) {
+      const response = await apiClient.post(LOGIN_ROUTES , {email , password} , {withCredentials:true});
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Login successful!");
-        localStorage.setItem('token', data.token); // Store JWT in localStorage
-      } else {
-        alert(data.message); // Show error message from the server
+      if (response.data.user.id) {
+        setUserInfo(response.data.user);
+        if (response.data.user.profileSetup) {
+          
+          navigate("/chat")
+        }
+        else{
+          navigate("/profile");
+        }
       }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert("Login failed!");
+      console.log({response})
+      
     }
-  }
-
+    
+  };
+  // const handleLogin = async () => {
+  //   if (validateLogin()) {  // Ensure this is a function if needed
+  //     try {
+  //       const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
+  
+  //       if (response.data.user && response.data.user.id) {
+  //         // Set user info in state
+  //         setUserInfo(response.data.user);
+  
+  //         // Redirect based on profile setup status
+  //         if (response.data.user.profileSetup) {
+  //           navigate("/chat");
+  //         } else {
+  //           navigate("/profile");
+  //         }
+  //       } else {
+  //         console.error("Login failed: User not found");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error during login:", error);
+  //       // Optionally, show an error message to the user (e.g., invalid credentials)
+  //     }
+  //   } else {
+  //     console.log("Login validation failed");
+  //     // Optionally, show a message about validation failure (e.g., "Please fill in all fields")
+  //   }
+  // };
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
       <div className="bg-gray-900 text-white shadow-lg rounded-xl p-8 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] xl:max-w-[40vw]">
-
         <div className="flex justify-center space-x-8 mb-6">
           <button
             onClick={() => setActiveTab("signup")}
@@ -94,8 +126,8 @@ const Auth = () => {
         {activeTab === "signup" ? (
           <div className="grid lg:grid-cols-2 gap-8">
             <div className="flex flex-col items-center justify-center text-center">
-              <h1 className="text-4xl lg:text-5xl font-bold text-indigo-300">Welcome</h1>
-              <p className="mt-4 text-lg lg:text-xl text-gray-300">Fill in the details to get started!</p>
+              <h1 className="text-4xl lg:text-5xl font-bold text-indigo-100">Welcome</h1>
+              <p className="mt-4 text-lg lg:text-xl text-gray-00">Fill in the details to get started!</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <div className="w-full space-y-4">
@@ -178,7 +210,7 @@ const Auth = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Auth
+export default Auth;
