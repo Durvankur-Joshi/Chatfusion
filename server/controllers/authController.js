@@ -1,74 +1,193 @@
+import { compare } from 'bcrypt';
 import User from '../models/User.js'; // Adjust the import based on your folder structure
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
+import { request } from 'express';
+const { sign } = pkg;
 
-// Register a new user
-export const register = async (req, res) => {
-  const { email, password, firstname, lastname, image, color } = req.body;
 
+const maxAge = 3* 24 * 60 * 60 * 100 ; 
+
+const createToken = (email, userId) => {
+  return sign({ email, userId }, process.env.JWT_KEY, { expiresIn: maxAge });
+};
+export const register = async (req, res, next) => {
   try {
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+    const { email, password } = req.body;
+      
+    if (!email || !password) {
+      return res.status(400).send("Email and password are required");
     }
 
-    // Ensure password meets length requirement
-    if (password.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-    }
+    const user = await User.create({ email, password });
 
-    // Create a new user (password hashing is handled by the schema's pre-save hook)
-    const newUser = new User({
-      email,
-      password,
-      firstname,
-      lastname,
-      image,
-      color
+    // Change this to use user._id instead of userId
+    res.cookie("jwt", createToken(email, user._id), {
+      maxAge,
+      secure: true,
+      sameSite: "None"
     });
 
-    // Save the new user
-    await newUser.save();
-
-    res.status(201).json({ message: 'User registered successfully' });
+    return res.status(201).json({
+      user: {
+        id: user._id,  // Change userId to user._id
+        email: user.email,
+        profileSetup: user.profileSetup,
+      },
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.log({ error });
+    return res.status(500).send("Internal Server Error");
   }
 };
 
-// Login a user
-export const login = async (req, res) => {
-  const { email, password } = req.body;
-
+export const login = async (req, res, next) => {
   try {
-    // Check if user exists
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Email and Password are required.");
+    }
+
+    // Correct the User model reference here
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(404).send("User with the given email is not found.");
     }
 
-    // Verify the password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    const auth = await compare(password, user.password);
+    if (!auth) {
+      return res.status(400).send("Password is incorrect.");
     }
 
-    // Generate a token
-    try {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_KEY, {
-        expiresIn: '1h', // Token expiration time
-      });
+    // Correct the 'res' object usage
+    res.cookie("jwt", createToken(email, user._id), {
+      maxAge,
+      secure: true,
+      sameSite: "None",
+    });
 
-      // Send token and user information
-      res.status(200).json({ token, userId: user._id });
-    } catch (error) {
-      console.error('Token generation error:', error);
-      res.status(500).json({ message: 'Token generation error' });
-    }
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        profileSetup: user.profileSetup,
+        firstName: user.firstname,
+        lastName: user.lastname,
+        image: user.image,
+        color: user.color,
+      },
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.log(error);
+    return res.status(500).send("Internal server error");
+  }
+};
+
+
+
+
+export const getUserInfo = async (req, res) => {
+  try {
+    console.log("Request received with userID:", req.userID);  // Debugging log
+
+    const userData = await User.findById(req.userID); // Ensure req.userID exists and is correct
+
+    if (!userData) {
+      return res.status(404).send("User with this ID not found");
+    }
+
+    return res.status(200).json({
+      id: userData._id,
+      email: userData.email,
+      profileSetup: userData.profileSetup,
+      firstName: userData.firstname,
+      lastName: userData.lastname,
+      image: userData.image,
+      color: userData.color,
+    });
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    return res.status(500).send("Internal server error");
+  }
+};
+
+
+// export const updateProfile = async (req, res) => {
+//   try {
+//     const { userID } = req; // Extract 'userID' from middleware
+//     const { firstName, lastName, color } = req.body; // Destructure 'req.body' to get data
+
+//     // Log userID for debugging
+//     console.log("UserID in updateProfile:", userID);
+
+//     // Validate the required fields
+//     if (!firstName || !lastName) {
+//       return res.status(400).send("First Name, Last Name, and color are required");
+//     }
+
+//     // Check if the user exists
+//     const userData = await User.findById(userID);
+//     if (!userData) {
+//       return res.status(404).send("User not found");
+//     }
+
+//     // Update the user data in the database
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userID, // Use 'userID' from the middleware
+//       {
+//         firstName,
+//         lastName,
+//         color,
+//         profileSetup: true,
+//       },
+//       { new: true, runValidators: true }
+//     );
+
+//     // Return the updated user information
+//     return res.status(200).json({
+//       id: updatedUser._id,
+//       email: updatedUser.email,
+//       profileSetup: updatedUser.profileSetup,
+//       firstName: updatedUser.firstName,
+//       lastName: updatedUser.lastName,
+//       image: updatedUser.image,
+//       color: updatedUser.color,
+//     });
+//   } catch (error) {
+//     console.error("Error updating user info:", error);
+//     return res.status(500).send("Internal server error");
+//   }
+// };
+export const updateProfile  = async (req, res) => {
+  const { userID } = req; // Get userID from request
+  const { firstName, lastName, color } = req.body;
+
+  // Validate fields
+  if (!firstName || !lastName ) {
+    return res.status(400).send("First Name, Last Name, and color are required");
+  }
+
+  try {
+    const userData = await User.findByIdAndUpdate(
+      userID, 
+      { firstName, lastName, color, profileSetup: true },
+      { new: true, runValidators: true }
+    );
+
+    if (!userData) {
+      return res.status(404).send("User not found");
+    }
+
+    return res.status(200).json({
+      id: userData._id,
+      email: userData.email,
+      profileSetup: userData.profileSetup,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      color: userData.color,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return res.status(500).send("Internal server error");
   }
 };

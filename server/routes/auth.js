@@ -1,12 +1,14 @@
-import express from 'express';
-import { register, login } from '../controllers/authController.js';
+import { Router } from 'express';
 
-const router = express.Router();
+import { getUserInfo ,login, register , updateProfile } from '../controllers/authController.js';
+import {verifyToken} from "../middleware/Authmiddleware.js"
+const authRoutes = Router() ;
 
-// Register route
-router.post('/register', register);
+authRoutes.post("/register", register);
+authRoutes.post("/login", login);
+// authRoutes.get("/user-info", verifyToken, getUserInfo);
+authRoutes.get("/user-info", verifyToken, getUserInfo);
+authRoutes.post("/update-profile", verifyToken, updateProfile);
 
-// Login route
-router.post('/login', login);
 
-export default router;
+export default authRoutes ;

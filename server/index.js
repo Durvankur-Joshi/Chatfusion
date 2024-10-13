@@ -13,12 +13,13 @@ const databaseURL = process.env.DATABASE_URL;
 
 // Middlewares
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: 'http://localhost:5173',
     methods: ["GET" , "POST" , "PUT" , "PATCH" , "DELETE"],
     credentials: true ,
 }));
 app.use(cookieParser());
-app.use(express.json()); // to parse JSON request bodies
+app.use(express.json());  
+
 
 app.use('/api/auth', authRoutes);
 
@@ -28,9 +29,9 @@ const server = app.listen(port, () => {
 });
 
 // Connect to MongoDB
-mongoose.connect(databaseURL, {
-  
-  ssl: true, // Force SSL connection
-})
-  .then(() => console.log("Database is connected"))
-  .catch((err) => console.error("Database connection error: ", err));
+
+mongoose
+.connect(databaseURL)
+.then(() => console.log("Database is Connected"))
+.catch((err) => console.log(err.message)
+)

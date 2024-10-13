@@ -4,12 +4,12 @@ import { genSalt, hash } from 'bcrypt';
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    required: [true , "Email is Required"],
     unique: true,
   },
   password: {
     type: String,
-    required: true,
+    required: [true , "Password is Required"],
   },
 
   firstname:{
@@ -26,7 +26,7 @@ image:{
 },
 color:{
     type : String,
-    required: false ,
+    required: true ,
 },
 profileSetup:{
     type : Boolean,
