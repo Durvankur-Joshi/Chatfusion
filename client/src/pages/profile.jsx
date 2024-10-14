@@ -5,11 +5,20 @@ import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
 import { UPDATE_PROFILE_ROUTES } from '../utils/constants';
 
+// Predefined avatars
+const avatars = [
+  'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg',
+  'https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small_2x/beautiful-latin-woman-avatar-character-icon-free-vector.jpg',
+  'https://static.vecteezy.com/system/resources/thumbnails/002/002/332/small/ablack-man-avatar-character-isolated-icon-free-vector.jpg',
+  'https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg',
+];
+
 const Profile = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [profileColor, setProfileColor] = useState('#ffffff');
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null); // Initialize with null
+  const [selectedAvatar, setSelectedAvatar] = useState(null); // Track selected avatar
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
@@ -21,10 +30,8 @@ const Profile = () => {
   }, []);
 
   const validateProfile = () => {
-    if (!firstName) {
-      return false;
-    }
-    if (!lastName) {
+    if (!firstName || !lastName) {
+      setShowToast(true);
       return false;
     }
     return true;
@@ -39,16 +46,14 @@ const Profile = () => {
             firstName,
             lastName,
             profileColor,
+            profileImage: selectedAvatar || profileImage, // Use avatar or uploaded image
           },
           { withCredentials: true }
         );
-
+  
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data });
-          setShowToast(true); // Show toast notification
-          setTimeout(() => {
-            navigate("/chat");
-          }, 2000); // Delay navigation to allow the toast to be seen
+          navigate("/chat");
         }
       } catch (error) {
         console.error("Error updating profile:", error.response?.data || error.message);
@@ -59,23 +64,32 @@ const Profile = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedAvatar(null); // Reset avatar selection when custom image is uploaded
       setProfileImage(URL.createObjectURL(file));
     }
+  };
+
+  const handleAvatarSelect = (avatar) => {
+    setSelectedAvatar(avatar);
+    setProfileImage(null); // Clear custom image if an avatar is selected
+  };
+
+  const handleDeleteImage = () => {
+    setProfileImage(null);
+    setSelectedAvatar(null); // Reset selected avatar as well
   };
 
   const calculateProgress = () => {
     let progress = 0;
     if (firstName) progress += 30;
     if (lastName) progress += 30;
-    if (profileImage) progress += 40;
+    if (profileImage || selectedAvatar) progress += 40;
     return progress;
   };
 
   useEffect(() => {
     if (showToast) {
       gsap.fromTo(".toast", { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
-      const timer = setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
-      return () => clearTimeout(timer);
     }
   }, [showToast]);
 
@@ -85,18 +99,22 @@ const Profile = () => {
         <h1 className="text-4xl lg:text-5xl font-bold text-gray-700 text-center mb-8">Complete Your Profile</h1>
 
         <div className="grid lg:grid-cols-2 gap-8 profile-info">
-          {/* Profile Image Upload */}
+          {/* Profile Image/Avatar Selection */}
           <div className="flex flex-col items-center justify-center text-center">
             <div
               className="profile-image w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden mb-4 hover:scale-110 transition-transform"
               style={{ backgroundColor: profileColor }}
             >
-              {profileImage ? (
+              {selectedAvatar ? (
+                <img src={selectedAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : profileImage ? (
                 <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-500">No image</span>
               )}
             </div>
+
+            {/* Upload Image */}
             <input
               type="file"
               accept="image/*"
@@ -110,6 +128,29 @@ const Profile = () => {
             >
               Upload Profile Image
             </label>
+            {profileImage && (
+              <button
+                onClick={handleDeleteImage}
+                className="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
+              >
+                Delete Profile Image
+              </button>
+            )}
+
+            {/* Avatar Selection */}
+            <div className="flex flex-wrap justify-center gap-4 mt-4">
+              {avatars.map((avatar, index) => (
+                <img
+                  key={index}
+                  src={avatar}
+                  alt={`Avatar ${index + 1}`}
+                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${
+                    selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''
+                  }`}
+                  onClick={() => handleAvatarSelect(avatar)}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Profile Info Form */}
@@ -161,13 +202,12 @@ const Profile = () => {
         </div>
 
         {/* Toast Notification */}
-        
-      </div>
-      {showToast && (
-          <div className="toast fixed bottom-4 left-4 bg-green-500 text-white p-3 rounded-lg shadow-lg w-72">
+        {showToast && (
+          <div className="toast fixed bottom-4 left-4 bg-green-500 text-white p-3 rounded-lg shadow-lg">
             Profile saved successfully!
           </div>
         )}
+      </div>
     </div>
   );
 };
