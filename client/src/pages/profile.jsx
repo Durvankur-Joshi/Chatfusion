@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
 import { UPDATE_PROFILE_ROUTES } from '../utils/constants';
+import { FaTrashAlt } from 'react-icons/fa'; // Import the trash icon from react-icons
 
 // Predefined avatars
 const avatars = [
@@ -50,7 +51,7 @@ const Profile = () => {
           },
           { withCredentials: true }
         );
-  
+
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data });
           navigate("/chat");
@@ -102,7 +103,7 @@ const Profile = () => {
           {/* Profile Image/Avatar Selection */}
           <div className="flex flex-col items-center justify-center text-center">
             <div
-              className="profile-image w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden mb-4 hover:scale-110 transition-transform"
+              className="profile-image w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden mb-4 hover:scale-110 transition-transform relative"
               style={{ backgroundColor: profileColor }}
             >
               {selectedAvatar ? (
@@ -112,6 +113,18 @@ const Profile = () => {
               ) : (
                 <span className="text-gray-500">No image</span>
               )}
+
+              {/* Delete Icon positioned on the corner */}
+
+            </div>
+            <div>
+              {profileImage && (
+                <FaTrashAlt
+                  onClick={handleDeleteImage}
+                  className="cursor-pointer text-red-600 hover:text-red-700 text-2xl absolute top-1 right-1 md:top-2 md:right-2 lg:top-2 lg:right-2 xl:top-2 xl:right-2"
+                />
+              )}
+
             </div>
 
             {/* Upload Image */}
@@ -128,14 +141,6 @@ const Profile = () => {
             >
               Upload Profile Image
             </label>
-            {profileImage && (
-              <button
-                onClick={handleDeleteImage}
-                className="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
-              >
-                Delete Profile Image
-              </button>
-            )}
 
             {/* Avatar Selection */}
             <div className="flex flex-wrap justify-center gap-4 mt-4">
@@ -144,9 +149,8 @@ const Profile = () => {
                   key={index}
                   src={avatar}
                   alt={`Avatar ${index + 1}`}
-                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${
-                    selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''
-                  }`}
+                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''
+                    }`}
                   onClick={() => handleAvatarSelect(avatar)}
                 />
               ))}
@@ -203,8 +207,8 @@ const Profile = () => {
 
         {/* Toast Notification */}
         {showToast && (
-          <div className="toast fixed bottom-4 left-4 bg-green-500 text-white p-3 rounded-lg shadow-lg">
-            Profile saved successfully!
+          <div className="toast fixed top-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg transition-opacity duration-500">
+            Please fill in all fields!
           </div>
         )}
       </div>
