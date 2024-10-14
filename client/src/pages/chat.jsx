@@ -16,7 +16,8 @@ const Chat = () => {
   }, [userInfo, navigate]);
 
   if (!userInfo) {
-    return <div>Loading user info...</div>;
+    return <div>Loading user info...<span className="loading loading-ring loading-lg"></span></div>;
+    
   }
 
   return (

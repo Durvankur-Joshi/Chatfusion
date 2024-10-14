@@ -125,7 +125,11 @@ function App() {
   }, [setUserInfo]); // Add setUserInfo to the dependency array
 
   if (loading) {
-    return <div>Loading.....</div>;
+    return<div className="flex justify-center items-center h-screen">
+    <span className="loading loading-infinity" style={{ width: '100px', height: '100px', color:'white' }}></span>
+  </div>
+  
+   ;
   }
 
   return (
