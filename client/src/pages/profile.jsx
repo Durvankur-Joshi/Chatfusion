@@ -97,7 +97,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
       <div className="profile-card bg-gray-900 text-white shadow-lg rounded-xl p-8 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] xl:max-w-[40vw]">
-        <h1 className="text-4xl lg:text-5xl font-bold text-gray-700 text-center mb-8">Complete Your Profile</h1>
+        <h1 className="text-4xl lg:text-5xl font-bold text-slate-200 text-center mb-8">Complete Your Profile</h1>
 
         <div className="grid lg:grid-cols-2 gap-8 profile-info">
           {/* Profile Image/Avatar Selection */}
