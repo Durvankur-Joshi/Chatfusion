@@ -1,29 +1,20 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '../store';
+import React from 'react';
+import ContactContainer from '../components/Contact-container';
+import Chat_container from '../components/Chat-container';
+import EmptyChatContainer from '../components/Empty-chat-container';
 
 const Chat = () => {
-  const { userInfo } = useAppStore();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (userInfo && !userInfo.profileSetup) {
-      // Alert if profile is incomplete
-      alert("Please complete your profile");
-      // Navigate to the profile page instead
-      navigate("/profile");
-    }
-  }, [userInfo, navigate]);
-
-  if (!userInfo) {
-    return <div>Loading user info...<span className="loading loading-ring loading-lg"></span></div>;
-    
-  }
-
   return (
-    <div>
-      <h1>Welcome to the chat, {userInfo.firstName}</h1>
-      {/* Chat content */}
+    <div className="flex h-screen">
+      {/* Left side - Contact container (30% of the screen) */}
+      <div className="w-1/3 border-r border-gray-300">
+        <ContactContainer />
+      </div>
+
+      {/* Right side - Empty chat container (70% of the screen) */}
+      <div className="w-11/12">
+        <EmptyChatContainer />
+      </div>
     </div>
   );
 };
