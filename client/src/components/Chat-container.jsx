@@ -1,9 +1,23 @@
-import React from 'react'
+import React from 'react';
+import ChatHeader from './ChatHeader';
+import MessageContainer from './MessageContainer';
+import MessageBar from './MessageBar';
 
-const Chat_container = () => {
+const ChatContainer = () => {
   return (
-    <div>This is a chat container</div>
-  )
-}
+    <div className=" h-full bg-white flex flex-col ">
+    {/* Chat Header */}
+    <ChatHeader className=" "/>
 
-export default Chat_container
+    {/* Message Container */}
+    <div className="flex-grow overflow-y-auto ">
+      <MessageContainer  />
+    </div>
+
+    {/* Message Bar */}
+    <MessageBar />
+  </div>
+  );
+};
+
+export default ChatContainer;

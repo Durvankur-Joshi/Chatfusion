@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 
-const ContactContainer = ({ contacts = [], onSelectContact }) => {
+  const ContactContainer = ({ contacts = [], onSelectContact }) => {
   const [activeContact, setActiveContact] = useState(null);
 
   const handleSelectContact = (contact) => {
@@ -10,8 +10,8 @@ const ContactContainer = ({ contacts = [], onSelectContact }) => {
   };
 
   return (
-    <div className="w-full h-full bg-gray-200 p-4 overflow-y-auto">
-      <h2 className="text-xl font-bold text-gray-600 mb-4">Contacts</h2>
+    <div className=" h-full bg-gray-900 p-4 overflow-y-auto">
+      <h5 className="text-3xl font-bold text-slate-200 mb-4 justify-center flex">ChatFusion</h5>
       <div className="space-y-2">
         {contacts.length > 0 ? (
           contacts.map((contact) => (
