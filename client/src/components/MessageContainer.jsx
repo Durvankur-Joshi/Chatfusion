@@ -6,14 +6,14 @@ const MessageContainer = () => {
       <div className="flex flex-col space-y-4">
         {/* Sent Message */}
         <div className="flex justify-end">
-          <div className="bg-blue-500 text-white p-3 rounded-lg max-w-xs">
+          <div className="bg-blue-700 text-white p-3 rounded-lg max-w-xs">
             <p>Hello, how are you?</p>
           </div>
         </div>
         
         {/* Received Message */}
         <div className="flex justify-start">
-          <div className="bg-gray-300 p-3 rounded-lg max-w-xs">
+          <div className="bg-gray-800 text-white p-3 rounded-lg max-w-xs">
             <p>I'm good, how about you?</p>
           </div>
         </div>
