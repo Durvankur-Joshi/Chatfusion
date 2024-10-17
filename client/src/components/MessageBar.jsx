@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { FaPaperclip, FaSmile, FaPaperPlane } from 'react-icons/fa';
-import Picker from '@emoji-mart/react';
-import data from '@emoji-mart/data';
+import EmojiPicker from 'emoji-picker-react';
 
 const MessageBar = () => {
+  const emojiRef = useRef();
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  // Handle sending message and file
+  // Close the emoji picker when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [emojiRef]);
+
+  // Handle emoji selection
+  const handleAddEmoji = (emoji) => {
+    setMessage((msg) => msg + emoji.emoji);
+  };
+
+  // Handle sending the message and file
   const handleSendMessage = () => {
     if (message || file) {
       console.log('Message sent:', message);
@@ -20,12 +38,7 @@ const MessageBar = () => {
     }
   };
 
-  // Handle emoji selection
-  const addEmoji = (emoji) => {
-    setMessage((prevMessage) => prevMessage + emoji.native); // Append emoji to message
-    setShowEmojiPicker(false); // Hide emoji picker after selection
-  };
-
+  // Handle file input
   const handleFileChange = (e) => {
     setFile(e.target.files[0]); // Set the selected file
   };
@@ -51,18 +64,22 @@ const MessageBar = () => {
         className="flex-1 border rounded-lg p-2"
       />
 
-      {/* Emoji Picker Toggle */}
-      <FaSmile
-        className="text-white text-xl mx-2 cursor-pointer"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      />
-
       {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div className="absolute bottom-16 left-0 z-50">
-          <Picker data={data} onEmojiSelect={addEmoji} />
-        </div>
-      )}
+      <div className="relative">
+        <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+          <FaSmile />
+        </button>
+
+        {showEmojiPicker && (
+          <div className="absolute bottom-16 right-0" ref={emojiRef}>
+            <EmojiPicker
+              theme="dark"
+              onEmojiClick={handleAddEmoji}
+              autoFocusSearch={false}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Send Button */}
       <button
