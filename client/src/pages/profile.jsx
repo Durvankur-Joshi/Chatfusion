@@ -4,9 +4,8 @@ import { gsap } from 'gsap';
 import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
 import { UPDATE_PROFILE_ROUTES } from '../utils/constants';
-import { FaTrashAlt } from 'react-icons/fa'; // Import the trash icon from react-icons
+import { FaTrashAlt, FaEdit } from 'react-icons/fa';
 
-// Predefined avatars
 const avatars = [
   'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg',
   'https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small_2x/beautiful-latin-woman-avatar-character-icon-free-vector.jpg',
@@ -18,8 +17,8 @@ const Profile = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [profileColor, setProfileColor] = useState('#ffffff');
-  const [profileImage, setProfileImage] = useState(null); // Initialize with null
-  const [selectedAvatar, setSelectedAvatar] = useState(null); // Track selected avatar
+  const [profileImage, setProfileImage] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
@@ -47,7 +46,7 @@ const Profile = () => {
             firstName,
             lastName,
             profileColor,
-            profileImage: selectedAvatar || profileImage, // Use avatar or uploaded image
+            profileImage: selectedAvatar || profileImage,
           },
           { withCredentials: true }
         );
@@ -65,19 +64,19 @@ const Profile = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedAvatar(null); // Reset avatar selection when custom image is uploaded
+      setSelectedAvatar(null);
       setProfileImage(URL.createObjectURL(file));
     }
   };
 
   const handleAvatarSelect = (avatar) => {
     setSelectedAvatar(avatar);
-    setProfileImage(null); // Clear custom image if an avatar is selected
+    setProfileImage(null);
   };
 
   const handleDeleteImage = () => {
     setProfileImage(null);
-    setSelectedAvatar(null); // Reset selected avatar as well
+    setSelectedAvatar(null);
   };
 
   const calculateProgress = () => {
@@ -99,9 +98,9 @@ const Profile = () => {
       <div className="profile-card bg-gray-900 text-white shadow-lg rounded-xl p-8 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] xl:max-w-[40vw]">
         <h1 className="text-4xl lg:text-5xl font-bold text-slate-200 text-center mb-8">Complete Your Profile</h1>
 
-        <div className="grid lg:grid-cols-2 gap-8 profile-info">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 profile-info">
           {/* Profile Image/Avatar Selection */}
-          <div className="flex flex-col items-center justify-center text-center">
+          <div className="flex flex-col items-center justify-center text-center mb-8 lg:mb-0">
             <div
               className="profile-image w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden mb-4 hover:scale-110 transition-transform relative"
               style={{ backgroundColor: profileColor }}
@@ -113,21 +112,13 @@ const Profile = () => {
               ) : (
                 <span className="text-gray-500">No image</span>
               )}
-
-              {/* Delete Icon positioned on the corner */}
-
-            </div>
-            <div>
               {profileImage && (
                 <FaTrashAlt
                   onClick={handleDeleteImage}
-                  className="cursor-pointer text-red-600 hover:text-red-700 text-2xl absolute top-1 right-1 md:top-2 md:right-2 lg:top-2 lg:right-2 xl:top-2 xl:right-2"
+                  className="cursor-pointer text-red-600 hover:text-red-700 text-2xl absolute top-1 right-1"
                 />
               )}
-
             </div>
-
-            {/* Upload Image */}
             <input
               type="file"
               accept="image/*"
@@ -141,16 +132,13 @@ const Profile = () => {
             >
               Upload Profile Image
             </label>
-
-            {/* Avatar Selection */}
             <div className="flex flex-wrap justify-center gap-4 mt-4">
               {avatars.map((avatar, index) => (
                 <img
                   key={index}
                   src={avatar}
                   alt={`Avatar ${index + 1}`}
-                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''
-                    }`}
+                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''}`}
                   onClick={() => handleAvatarSelect(avatar)}
                 />
               ))}
