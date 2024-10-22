@@ -34,7 +34,7 @@ const Profile = () => {
       setFirstName(userInfo.firstName);
       setLastName(userInfo.lastName);
       setProfileColor(userInfo.profileColor);
-      setProfileImage(userInfo.image);
+      setImage(userInfo.image);
     }
   }, [userInfo]);
 
