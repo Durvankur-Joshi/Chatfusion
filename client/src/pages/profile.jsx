@@ -95,47 +95,10 @@ const Profile = () => {
   
   
 
-  // const handleProfileSave = async () => {
-  //   if (validateProfile()) {
-  //     try {
-  //       const response = await apiClient.post(
-  //         UPDATE_PROFILE_ROUTES,
-  //         {
-  //           firstName,
-  //           lastName,
-  //           profileColor,
-  //           profileImage: selectedAvatar || profileImage,
-  //         },
-  //         { withCredentials: true }
-  //       );
+ 
 
-  //       if (response.status === 200 && response.data) {
-  //         setUserInfo({ ...response.data });
-  //         navigate("/chat");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error updating profile:", error.response?.data || error.message);
-  //     }
-  //   }
-  // };
-
-  // const handleImageUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const formData = new FormData();
-  //     formData.append("profileImage", file);
-
-  //     try {
-  //       const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTES, formData, { withCredentials: true });
-  //       if (response.status === 200 && response.data.image) {
-  //         setUserInfo({ ...userInfo, image: response.data.image });
-  //         setShowToast("Image uploaded successfully");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error uploading image:", error.response?.data || error.message);
-  //     }
-  //   }
-  // };
+  
+  
 
   const handleAvatarSelect = (avatar) => {
     setSelectedAvatar(avatar);
