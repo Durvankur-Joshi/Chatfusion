@@ -213,6 +213,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+
 // Add profile image
 export const addProfileImage = async (req, res) => {
   const { userID } = req;
@@ -266,8 +267,8 @@ export const removeProfileImage = async (req, res) => {
     return res.status(200).json({
       id: updatedUser._id,
       email: updatedUser.email,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
+      firstName: updatedUser.firstname,
+      lastName: updatedUser.lastname,
       profileImage: null, // Image removed
     });
   } catch (error) {

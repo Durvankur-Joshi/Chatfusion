@@ -42,68 +42,53 @@ const Auth = () => {
       alert('Password is required');
       return false;
     }
+    return true
   }
 
   const handleSignUp = async (event) => {
     if (validateSignup) {
       const response = await apiClient.post(SIGNUP_ROUTES , {email , password} , { withCredentials: true});
 
-      if (response.status == 201) {
-        setUserInfo(response.data.user);
-        navigate("/profile");
-      }
-
-      console.log(response);
+     
       
-    }
+
+      console.log({response});
+      
+    }else {
+      console.error(error);
+
   };
+}
+
 
   const handleLogin = async () => {
-    if (validateLogin) {
-      const response = await apiClient.post(LOGIN_ROUTES , {email , password} , {withCredentials:true});
-
-      if (response.data.user.id) {
-        setUserInfo(response.data.user);
-        if (response.data.user.profileSetup) {
-          
-          navigate("/chat")
+    if (validateLogin()) {  // Ensure this is a function if needed
+      try {
+        const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
+  
+        if (response.data.user && response.data.user.id) {
+          // Set user info in state
+          setUserInfo(response.data.user);
+  
+          // Redirect based on profile setup status
+          if (response.data.user.profileSetup) {
+            // navigate("/chat");
+          } else {
+            navigate("/profile");
+          }
+        } else {
+          console.error("Login failed: User not found");
         }
-        else{
-          navigate("/profile");
-        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        // Optionally, show an error message to the user (e.g., invalid credentials)
       }
-      console.log({response})
-      
+    } else {
+      console.log("Login validation failed");
+      // Optionally, show a message about validation failure (e.g., "Please fill in all fields")
     }
-    
-  };
-  // const handleLogin = async () => {
-  //   if (validateLogin()) {  // Ensure this is a function if needed
-  //     try {
-  //       const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
-  
-  //       if (response.data.user && response.data.user.id) {
-  //         // Set user info in state
-  //         setUserInfo(response.data.user);
-  
-  //         // Redirect based on profile setup status
-  //         if (response.data.user.profileSetup) {
-  //           navigate("/chat");
-  //         } else {
-  //           navigate("/profile");
-  //         }
-  //       } else {
-  //         console.error("Login failed: User not found");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error during login:", error);
-  //       // Optionally, show an error message to the user (e.g., invalid credentials)
-  //     }
-  //   } else {
-  //     console.log("Login validation failed");
-  //     // Optionally, show a message about validation failure (e.g., "Please fill in all fields")
-  //   }
-  // };
+  }
+
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
@@ -213,4 +198,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default Auth
