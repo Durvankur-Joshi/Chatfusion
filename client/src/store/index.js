@@ -30,14 +30,11 @@ export const useAppStore = create((set) => ({
     firstName: '',
     lastName: '',
     profileColor: '',
-    image: '', // this will hold the image URL
+    image: '',
     profileSetup: false,
   },
   setUserInfo: (userInfo) => set({ userInfo }),
 }));
-
-
-
 
 
 

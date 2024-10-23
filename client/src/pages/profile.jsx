@@ -55,7 +55,7 @@ const Profile = () => {
             firstName,
             lastName,
             profileColor,
-            profileImage: selectedAvatar || profileImage,
+            Image: selectedAvatar || Image,
           },
           { withCredentials: true }
         );

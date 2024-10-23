@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { FaPaperclip, FaSmile, FaPaperPlane } from 'react-icons/fa';
 import EmojiPicker from 'emoji-picker-react';
 
+
 const MessageBar = () => {
   const emojiRef = useRef();
   const [message, setMessage] = useState('');
