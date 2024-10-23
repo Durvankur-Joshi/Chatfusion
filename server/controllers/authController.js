@@ -13,68 +13,7 @@ const createToken = (email, userId) => {
 
 
 
-// export const register = async (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
 
-//     if (!email || !password) {
-//       return res.status(400).send("Email and password are required");
-//     }
-
-//     // Attempt to create a user
-//     const user = await User.create({ email, password });
-//     console.log("User created successfully:", user); // Log success
-
-//     // Create token with user._id and log it
-//     const token = createToken(email, user._id);
-//     console.log("Token created:", token);
-
-//     // Set cookie with JWT token
-//     res.cookie("jwt", token, {
-//       maxAge, 
-//       secure: true, 
-//       sameSite: "None"
-//     });
-
-//     // Return user data in response
-//     return res.status(201).json({
-//       user: {
-//         id: user._id,  // user._id instead of userId
-//         email: user.email,
-//         profileSetup: user.profileSetup,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error during user registration:", error); // More detailed logging
-//     return res.status(500).send("Internal Server Error");
-//   }
-// };
-// export const register = async (req, res, next) => {
-//   try {
-//     if (!email || !password) {
-//       return res.status(400).send("Email and password is required");
-//     }
-
-//     const user = await User.create({email , password});
-//     res.cookie("jwt" , createToken(email , user.id),{
-//       maxAge,
-//       secure:true,
-//       sameSite:"None"
-//     })
-
-//     return res.status(200).json({
-//       user: {
-//         id: user._id,
-//         email: user.email,
-//         profileSetup: user.profileSetup
-//       }
-        
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send("Internal server error");
-//   }
-// };
 export const register = async (req, res, next) => {
   try {
     // Destructure email and password from req.body
@@ -140,8 +79,8 @@ export const login = async (req, res, next) => {
         id: user._id,
         email: user.email,
         profileSetup: user.profileSetup,
-        firstName: user.firstname,
-        lastName: user.lastname,
+        firstName: user.firstName,
+        lastName: user.lastName,
         image: user.image,
         color: user.color,
       },
@@ -181,17 +120,17 @@ export const getUserInfo = async (req, res) => {
 
 
 export const updateProfile = async (req, res) => {
-  const { userID } = req; // Ensure userID is added to req via verifyToken middleware
-  const { firstName, lastName, color } = req.body;
+  const { userID } = req;
+  const { firstname, lastname, color } = req.body;  // Use lowercase here
 
-  if (!firstName || !lastName) {
+  if (!firstname || !lastname) {
     return res.status(400).json({ error: "First Name and Last Name are required" });
   }
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      userID,
-      { firstName, lastName, profileSetup: true },
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userID },
+      { $set: { firstname, lastname, profileSetup: true, color } },  // Use lowercase here
       { new: true, runValidators: true }
     );
 
@@ -202,8 +141,8 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       id: updatedUser._id,
       email: updatedUser.email,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
+      firstname: updatedUser.firstname,  // Use lowercase here
+      lastname: updatedUser.lastname,    // Use lowercase here
       color: updatedUser.color,
       profileSetup: updatedUser.profileSetup,
     });
@@ -212,7 +151,6 @@ export const updateProfile = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 // Add profile image
 export const addProfileImage = async (req, res) => {
