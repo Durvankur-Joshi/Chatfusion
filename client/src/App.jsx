@@ -1,23 +1,4 @@
-// import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-// import Auth from './pages/auth';
-// import Chat from './pages/chat';
-// import Profile from './pages/profile.jsx';
-// import { useAppStore } from '../src/store/index.js';
-// import { apiClient } from './lib/api-client.js';
-// import { GET_USER_INFO } from './utils/constants.js';
-// import { useState , useEffect } from 'react';
 
-// const PrivateRoute = ({ children }) => {
-//   const { userInfo } = useAppStore();
-//   const isAuthenticated = !!userInfo;
-//   return isAuthenticated ? children : <Navigate to="/profile" />;
-// };
-// // const PrivateRoute = ({ children }) => {
-// //   const { userInfo } = useAppStore();
-// //   console.log(userInfo);  // Log the user info to check the state
-// //   const isAuthenticated = !!userInfo;
-// //   return isAuthenticated ? children : <Navigate to="/auth" />;
-// // };
 
 
 
