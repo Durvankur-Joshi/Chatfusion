@@ -8,7 +8,7 @@ const Chat = () => {
   return (
     <div className="flex h-screen">
       {/* Left side - Contact container (30% of the screen) */}
-      <div className="w-1/5 border-r border-gray-300">
+      <div className=" sm:w-1/5   border-r border-gray-300">
         <ContactContainer />
       </div>
 
