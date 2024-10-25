@@ -72,7 +72,7 @@ const Auth = () => {
   
           // Redirect based on profile setup status
           if (response.data.user.profileSetup) {
-            // navigate("/chat");
+            navigate("/chat");
           } else {
             navigate("/profile");
           }
