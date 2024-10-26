@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
+
 import ProfileDisplay from './ProfileInfo';
+import NewDM from './NewDM';
+
 
 const ContactContainer = ({ contacts = [], onSelectContact }) => {
   const [activeContact, setActiveContact] = useState(null);
@@ -18,28 +21,14 @@ const ContactContainer = ({ contacts = [], onSelectContact }) => {
       </div>
 
       {/* Contacts List */}
-      <div className="flex-1 space-y-2">
-        {contacts.length > 0 ? (
-          contacts.map((contact) => (
-            <div
-              key={contact.id}
-              className={`flex items-center p-2 sm:p-3 cursor-pointer rounded-lg transition-colors ${activeContact === contact.id ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'
-                } hover:bg-blue-100 hover:text-blue-700`}
-              onClick={() => handleSelectContact(contact)}
-            >
-              {/* Contact Icon */}
-              <FaUserCircle className="text-2xl sm:text-3xl mr-2 sm:mr-3" />
-
-              {/* Contact Details */}
-              <div>
-                <h3 className="text-sm sm:text-lg font-semibold">{contact.name}</h3>
-                <p className="text-xs sm:text-sm text-gray-500">{contact.lastMessage || 'No messages yet'}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-xs sm:text-sm text-center">No contacts available.</p>
-        )}
+      <div className='gird '>
+        <div className='flex items-center justify-between gap-6'>
+         <h6>Direct Message</h6>
+         <NewDM/>
+        </div>
+        <div>
+         <h6 className="flex items-center justify-between ">Channel</h6>
+        </div>
       </div>
 
       {/* Profile Display */}
