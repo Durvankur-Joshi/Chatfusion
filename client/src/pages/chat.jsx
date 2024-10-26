@@ -17,7 +17,7 @@ const Chat = () => {
         <EmptyChatContainer />
       </div> */}
        <div className="flex-1">
-        <ChatContainer />
+        {/* <ChatContainer /> */}
       </div>
     </div>
   
