@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User from "../models/User.js";
 
 export const searchContact = async (req, res, next) => {
     try {
@@ -11,7 +11,7 @@ export const searchContact = async (req, res, next) => {
          }
 
          const sanitizedSearchTerm = searchTerm.replace(
-            /[.*+?^{}()|[\]\\]/9,
+            /[.*+?^{}()|[\]\\]/g,
             "\\$&"
          )
 
