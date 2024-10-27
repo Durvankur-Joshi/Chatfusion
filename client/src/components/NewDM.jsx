@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import Lottie from 'lottie-react';
-import noContactsAnimation from '../assets/Animation - 1729949663211.json'; // Update with your actual path
+import noContactsAnimation from '../assets/Animation - 1729949663211.json'; 
 import { apiClient } from '../lib/api-client';
 import { SEARCH_CONTACT } from '../utils/constants';
 import { HOST } from '../utils/constants';
@@ -43,7 +43,7 @@ const NewDM = () => {
           </form>
           <h3 className="font-bold text-lg text-white text-center mb-5">Please select contact</h3>
 
-          {/* Search input */}
+          
           <div>
             <label className="input input-bordered flex items-center gap-2">
               <input
