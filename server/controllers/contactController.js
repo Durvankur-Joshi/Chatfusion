@@ -26,7 +26,7 @@ export const searchContact = async (req, res, next) => {
             ]
          })
 
-         console.log("Matched contacts:", contacts);
+         
          return res.status(200).send({ message: "Search successfully", contacts });
          
     } catch (error) {
