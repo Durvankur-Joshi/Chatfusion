@@ -26,7 +26,9 @@ export const searchContact = async (req, res, next) => {
             ]
          })
 
-     return res.status(200).send("Logout Successful");
+         console.log("Matched contacts:", contacts);
+         return res.status(200).send({ message: "Search successfully", contacts });
+         
     } catch (error) {
       console.log(error);
       return res.status(500).send("Internal server error");

@@ -31,8 +31,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (userInfo?.profileSetup) {
-      setFirstName(userInfo.firstName);
-      setLastName(userInfo.lastName);
+      setFirstName(userInfo.firstname);
+      setLastName(userInfo.lastname);
       setProfileColor(userInfo.profileColor);
       setImage(userInfo.image);
     }
