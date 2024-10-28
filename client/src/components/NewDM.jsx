@@ -7,7 +7,7 @@ import { SEARCH_CONTACT, HOST } from '../utils/constants';
 import { useAppStore } from '../store';
 
 const NewDM = () => {
-  const { setSelectedChatType, setSelectedChatData , selectedChatType,selectedChatData } = useAppStore();
+  const { setSelectedChatType, setSelectedChatData  } = useAppStore();
   const [searchContacts, setSearchContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -35,8 +35,7 @@ const NewDM = () => {
     setSearchContacts([]); 
     
     if (modalRef.current) modalRef.current.close(); // Close the modal
-    console.log("Selected Chat Type:", selectedChatType);
-console.log("Selected Chat Data:", selectedChatData);
+    
 
   };
 
