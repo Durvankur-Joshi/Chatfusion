@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js"
 import  contactRoutes  from "./routes/contactRoutes.js";
+import setupSocket from "./socket.js";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ const databaseURL = process.env.DATABASE_URL;
 
 // Middlewares
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.ORIGIN,
     methods: ["GET" , "POST" , "PUT" , "PATCH" , "DELETE"],
     credentials: true ,
 }));
@@ -34,6 +35,8 @@ app.use('/api/contacts', contactRoutes);
 const server = app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+setupSocket(server);
 
 // Connect to MongoDB
 
