@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { IoIosAdd } from 'react-icons/io';
 import Lottie from 'lottie-react';
 import noContactsAnimation from '../assets/Animation - 1729949663211.json'; 
 import { apiClient } from '../lib/api-client';
-import { SEARCH_CONTACT } from '../utils/constants';
-import { HOST } from '../utils/constants';
+import { SEARCH_CONTACT, HOST } from '../utils/constants';
+import { useAppStore } from '../store';
 
 const NewDM = () => {
+  const { setSelectedChatType, setSelectedChatData , selectedChatType,selectedChatData } = useAppStore();
   const [searchContacts, setSearchContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const modalRef = useRef(null); // Add a ref for the modal
 
   const searchContact = async (searchTerm) => {
     try {
@@ -26,24 +28,35 @@ const NewDM = () => {
     }
   };
 
+  const selectNewContact = (contact) => {
+    console.log("Contact selected:", contact);
+    setSelectedChatType("contact"); // Make sure this is being called
+    setSelectedChatData(contact); // Set the contact data
+    setSearchContacts([]); 
+    
+    if (modalRef.current) modalRef.current.close(); // Close the modal
+    console.log("Selected Chat Type:", selectedChatType);
+console.log("Selected Chat Data:", selectedChatData);
+
+  };
+
   return (
     <>
       {/* Button to open modal */}
       <button
         className="text-white text-2xl hover:text-gray-300 transition"
-        onClick={() => document.getElementById('my_modal_3').showModal()}>
+        onClick={() => modalRef.current?.showModal()}>
         <IoIosAdd />
       </button>
 
       {/* Modal dialog */}
-      <dialog id="my_modal_3" className="modal">
+      <dialog ref={modalRef} id="my_modal_3" className="modal">
         <div className="modal-box h-auto max-w-lg p-6 bg-gray-800 rounded-lg shadow-lg">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           </form>
           <h3 className="font-bold text-lg text-white text-center mb-5">Please select contact</h3>
 
-          
           <div>
             <label className="input input-bordered flex items-center gap-2">
               <input
@@ -75,7 +88,9 @@ const NewDM = () => {
             ) : (
               <ul className="text-white mt-4 space-y-2">
                 {searchContacts.map((contact, index) => (
-                  <li key={index} className="flex items-center space-x-2">
+                  <li key={index} className="flex items-center space-x-2"
+                  onClick={() => selectNewContact(contact)}
+                  >
                     <div className='relative h-12 w-12 sm:h-16 sm:w-16 md:h-16 md:w-16 rounded-full overflow-hidden'>
                       <img
                         src={`${HOST}/${contact.image}`}
