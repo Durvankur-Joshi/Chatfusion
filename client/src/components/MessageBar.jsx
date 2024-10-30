@@ -28,16 +28,24 @@ const MessageBar = () => {
   };
 
   const handleSendMessage = () => {
-    if (selectedChatType === "contact") { 
-      console.log(message)
-      socket.emit("sendMessage", {
+    if (selectedChatType === "contact" && socket) {
+      const messagePayload = {
         sender: userInfo.id,
         content: message,
         recipient: selectedChatData._id,
         messageType: "text",
         fileUrl: undefined,
+      };
+
+      console.log("Sending message:", messagePayload);
+      socket.emit("sendMessage", messagePayload, (response) => {
+        if (response.status === "ok") {
+          console.log("Message sent successfully");
+        } else {
+          console.error("Error sending message:", response.error);
+        }
       });
-      setMessage(""); // Clear message after sending
+      setMessage("");
     }
   };
 
@@ -45,7 +53,7 @@ const MessageBar = () => {
     <div className="bg-gray-900 p-4 flex items-center space-x-2 border-t relative">
       <label className="cursor-pointer">
         <FaPaperclip className="text-white text-xl mx-2" />
-        <input type="file" className="hidden" onChange={(e) => setFile(e.target.files[0])} />
+        <input type="file" className="hidden" />
       </label>
 
       <input
