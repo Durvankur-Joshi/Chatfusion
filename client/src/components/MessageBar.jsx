@@ -8,15 +8,15 @@ const MessageBar = () => {
   const emojiRef = useRef();
   const [message, setMessage] = useState("");
   const socket = useSocket();
-  const { selectedChatType, selectedChatData, userInfo } = useAppStore();
+  const { selectedChatType, selectedChatData, userInfo, addMessage } = useAppStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = (event) => {
       if (emojiRef.current && !emojiRef.current.contains(event.target)) {
         setShowEmojiPicker(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -28,25 +28,25 @@ const MessageBar = () => {
   };
 
   const handleSendMessage = () => {
-    if (selectedChatType === "contact" && socket) {
-      const messagePayload = {
-        sender: userInfo.id,
-        content: message,
-        recipient: selectedChatData._id,
-        messageType: "text",
-        fileUrl: undefined,
-      };
+    if (message.trim() === "") return;
 
-      console.log("Sending message:", messagePayload);
-      socket.emit("sendMessage", messagePayload, (response) => {
-        if (response.status === "ok") {
-          console.log("Message sent successfully");
-        } else {
-          console.error("Error sending message:", response.error);
-        }
-      });
-      setMessage("");
-    }
+    const messageData = {
+      sender: userInfo.id,
+      content: message,
+      recipient: selectedChatData._id,
+      messageType: "text",
+      fileUrl: undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Emit message
+    socket.emit("sendMessage", messageData);
+
+    // Add to local store
+    addMessage(messageData);
+
+    // Clear input field
+    setMessage("");
   };
 
   return (
