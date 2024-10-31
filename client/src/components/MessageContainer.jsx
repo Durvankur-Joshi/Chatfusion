@@ -1,50 +1,64 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useAppStore } from '../store';
+import moment from "moment";
 
 const MessageContainer = () => {
-  return (
-    <div className="flex-1 h-full p-4 bg-gray-900 overflow-y-auto">
-      <div className="flex flex-col space-y-4">
-        {/* Sent Message */}
-        <div className="flex justify-start">
-          <div className="bg-gray-800 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p>HI ,  naam bataya  </p>
-          </div>
+  const scrollRef = useRef();
+  const { selectedChatData, selectedChatType, selectedChatMessage } = useAppStore();
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [selectedChatMessage]);
+
+  const renderMessage = () => {
+    let lastDate = null;
+    return selectedChatMessage.map((message, index) => {
+      const messageDate = moment(message.timestamp).format("YYYY-MM-DD");
+      const showDate = messageDate !== lastDate;
+      lastDate = messageDate;
+
+      return (
+        <div key={index}>
+          {showDate && (
+            <div className="text-center text-gray-500 my-2">
+              {moment(message.timestamp).format("LL")}
+            </div>
+          )}
+          {/* Render messages for both sender and receiver */}
+          {renderDMMessage(message)}
         </div>
-        
-        <div className="flex justify-end">
-          <div className="bg-blue-700 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p>bhupendra jogi!</p>
+      );
+    });
+  };
+
+  const renderDMMessage = (message) => {
+    const isSender = message.sender === selectedChatData._id;
+    return (
+      <div className={`${isSender ? "text-left" : "text-right"}`}>
+        {message.messageType === 'text' && (
+          <div
+            className={`${
+              isSender
+                ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
+                : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+            } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
+          >
+            {message.content}
           </div>
-        </div>
-        
-        {/* Received Message */}
-        <div className="flex justify-start">
-          <div className="bg-gray-800 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p>US mai kaha kaha gaye ho ?</p>
-          </div>
-        </div>
-        
-        {/* Add more messages as needed */}
-        {/* Sent Message */}
-        <div className="flex justify-end">
-          <div className="bg-blue-700 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p>Bohot jaga </p>
-          </div>
-        </div>
-        
-        {/* Received Message */}
-        <div className="flex justify-start">
-          <div className="bg-gray-800 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p>naam bataya</p>
-          </div>
-          
-        </div>
-        <div className="flex justify-end">
-          <div className="bg-blue-700 text-white p-3 rounded-lg max-w-xs md:max-w-md">
-            <p> bhupendra jogi </p>
-          </div>
+        )}
+        <div className="text-xs text-gray-600">
+          {moment(message.timestamp).format("LT")}
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="flex-1 h-full p-4 bg-gray-900">
+      {renderMessage()}
+      <div ref={scrollRef} />
     </div>
   );
 };
