@@ -14,7 +14,7 @@ export const SocketProvider = ({ children }) => {
   const { userInfo } = useAppStore();
 
   useEffect(() => {
-    if (userInfo && !socket.current) {
+    if (userInfo) {
       // Initialize socket connection with user ID as a query parameter
       socket.current = io(HOST, {
         withCredentials: true,
@@ -43,10 +43,7 @@ export const SocketProvider = ({ children }) => {
 
       // Cleanup on component unmount or user logout
       return () => {
-        if (socket.current) {
           socket.current.disconnect();
-          socket.current = null; // Clear reference to prevent reconnection
-        }
       };
     }
   }, [userInfo]);
