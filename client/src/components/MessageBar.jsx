@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { FaPaperclip, FaSmile, FaPaperPlane } from "react-icons/fa";
 import EmojiPicker from "emoji-picker-react";
 import { useAppStore } from "../store";
-import { useSocket } from "../context/SocketContext.jsx";
+import { useSocket } from "../context/SocketContext";
 
 const MessageBar = () => {
   const emojiRef = useRef();
