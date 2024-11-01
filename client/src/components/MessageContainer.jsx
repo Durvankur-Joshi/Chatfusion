@@ -1,10 +1,33 @@
 import React, { useRef, useEffect } from 'react';
 import { useAppStore } from '../store';
 import moment from "moment";
+import { apiClient } from '../lib/api-client';
+import { GET_ALL_MESSAGES_ROUTES } from '../utils/constants';
 
 const MessageContainer = () => {
   const scrollRef = useRef();
-  const { selectedChatData, selectedChatType, selectedChatMessage } = useAppStore();
+  const { selectedChatData, selectedChatType, selectedChatMessage, setSelectedChatMessage } = useAppStore();
+
+  useEffect(() => {
+    const getMessages = async () =>{
+      try {
+        const response = await apiClient.post(GET_ALL_MESSAGES_ROUTES , 
+          {id:selectedChatData._id},
+        {withCredentials:true}
+      )
+      if (response.data.message) {
+        setSelectedChatMessage(response.data.message);
+      }
+      } catch (error) {
+        console.log({error})
+      }
+    }
+  
+    if (selectedChatData._id) {
+      if (selectedChatType === "contact")getMessages();
+    }
+  }, [selectedChatData , selectedChatType ,setSelectedChatMessage])
+  
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,7 +79,7 @@ const MessageContainer = () => {
   };
 
   return (
-    <div className="flex-1 h-full p-4 bg-gray-900">
+    <div className="flex-1 p-4 bg-gray-900">
       {renderMessage()}
       <div ref={scrollRef} />
     </div>
