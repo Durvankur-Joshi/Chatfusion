@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import User from "../models/User.js";
+import Message from "../models/MessageModel.js";
 
 export const searchContact = async (req, res, next) => {
     try {
@@ -34,3 +36,194 @@ export const searchContact = async (req, res, next) => {
       return res.status(500).send("Internal server error");
     }
   };
+  
+
+ 
+  
+//   export const getContactForDMList = async (req, res, next) => {
+//     try {
+//       let { userId } = req;
+//       userId = new mongoose.Types.ObjectId(userId);
+  
+//       const contact = await Message.aggregate([
+//         {
+//           $match: {
+//             $or: [{ sender: userId }, { recipient: userId }],
+//           },
+//         },
+//         {
+//           $sort: { timestamp: -1 },
+//         },
+//         {
+//           $group: {
+//             _id: {
+//               $cond: {
+//                 if: { $eq: ["$sender", userId] },
+//                 then: "$recipient",
+//                 else: "$sender",
+//               },
+//             },
+//             lastMessagezTime: { $first: "$timestamp" },
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: "users", // Ensure this is the correct collection name
+//             localField: "_id",
+//             foreignField: "_id",
+//             as: "contactInfo",
+//           },
+//         },
+//         {
+//           $unwind: "$contactInfo",
+//         },
+//         {
+//           $project: {
+//             _id: 1,
+//             lastMessagezTime: 1,
+//             email: "$contactInfo.email",
+//             firstname: "$contactInfo.firstname",
+//             lastname: "$contactInfo.lastname",
+//             image: "$contactInfo.image",
+//             color: "$contactInfo.color",
+//           },
+//         },
+//         {
+//           $sort: { lastMessagezTime: -1 }, // Sorting by last message time
+//         },
+//       ]);
+  
+//       return res.status(200).send({ contact });
+//     } catch (error) {
+//       console.error("Error fetching DM contacts:", error);
+//       return res.status(500).send("Internal server error");
+//     }
+//   };\
+export const getContactForDMList = async (req, res, next) => {
+   try {
+     let userId = req.userID; // Ensure you're using req.userID
+ 
+     userId = new mongoose.Types.ObjectId(userId);
+ 
+     const contacts = await Message.aggregate([
+       {
+         $match: {
+           $or: [{ sender: userId }, { recipient: userId }],
+         },
+       },
+       {
+         $sort: { timestamp: -1 },
+       },
+       {
+         $group: {
+           _id: {
+             $cond: {
+               if: { $eq: ["$sender", userId] }, // Added $ before sender
+               then: "$recipient",
+               else: "$sender",
+             },
+           },
+           lastMessagezTime: { $first: "$timestamp" },
+         },
+       },
+       {
+         $lookup: {
+           from: "users", // Ensure this is the exact name of your user collection
+           localField: "_id",
+           foreignField: "_id",
+           as: "contactInfo",
+         },
+       },
+       {
+         $unwind: "$contactInfo",
+       },
+       {
+         $project: {
+           _id: 1,
+           lastMessagezTime: 1,
+           email: "$contactInfo.email",
+           firstname: "$contactInfo.firstname",
+           lastname: "$contactInfo.lastname",
+           image: "$contactInfo.image",
+           color: "$contactInfo.color",
+         },
+       },
+       {
+         $sort: { lastMessagezTime: -1 },
+       },
+     ]);
+ 
+     return res.status(200).send({ contacts });
+   } catch (error) {
+     console.log(error);
+     return res.status(500).send("Internal server error");
+   }
+ };
+ 
+  
+
+//   export const getContactForDMList = async (req, res, next) => {
+//    try {
+     
+//        let userId  = req.userID;
+//        userId = new mongoose.Types.ObjectId(userId);
+
+//        const contact = await Message.aggregate([
+//          {
+//             $match:{
+//                $or:[{sender:userId} , {recipient:userId}],
+//             }
+//          },
+//          {
+//             $sort:{timestamp : -1},
+//          },
+//          {
+//             $group:{
+//                _id:{
+//                   $cond:{
+//                      if:{$eq:["$sender" , userId]},
+//                      then:"$recipient",
+//                      else:"sender"
+//                   }
+
+//                },
+//                lastMessagezTime:{$first:"$timestamp"}
+//             }
+//          },
+//          {
+//             $lookup:{
+//                from:"user",
+//                localField:"_id",
+//                foreignField:"_id",
+//                as:"contactInfo",
+//             }
+//          },
+//          {
+//             $unwind:"$contactInfo"
+//          },
+//          {
+//             $project:{
+//                _id:1,
+//                lastMessagezTime:1,
+//                email:"$contactInfo.email",
+//                firstname:"$contactInfo.firstname",
+//                lastname:"$contactInfo.lastname",
+//                image:"$contactInfo.image",
+//                color:"$contactInfo.color",
+
+//             },
+//          },
+//             {
+//                $sort:{lastMessagezTime:1},
+//             },
+
+//        ])
+
+        
+//         return res.status(200).send({contact});
+        
+//    } catch (error) {
+//      console.log(error);
+//      return res.status(500).send("Internal server error");
+//    }
+//  };
