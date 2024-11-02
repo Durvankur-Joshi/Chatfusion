@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 
 import ProfileDisplay from './ProfileInfo';
 import NewDM from './NewDM';
+import { apiClient } from '../lib/api-client.js';
+import { GET_DM_CONTACT_ROUTES } from '../utils/constants.js';
 
 
-const ContactContainer = ({ contacts = [], onSelectContact }) => {
-  const [activeContact, setActiveContact] = useState(null);
+const ContactContainer = () => {
+useEffect(() => {
+  const getContacts = async ()=>
+  {
+    const response =  await apiClient.get(GET_DM_CONTACT_ROUTES,{
+      withCredentials:true
+    });
+    if (response.data.contacts) {
+      console.log(response.data.contacts)
+    }
+  }
+  getContacts();
+}, [])
 
-  const handleSelectContact = (contact) => {
-    setActiveContact(contact.id);
-    onSelectContact(contact); // Pass the selected contact to the parent component
-  };
 
   return (
     <div className="h-full sm:h-screen bg-gray-900 p-4 sm:p-6 md:p-8 lg:p-10 overflow-y-auto flex flex-col">
