@@ -1,5 +1,6 @@
 
 import Message from "../models/MessageModel.js";
+import {mkdirSync, renameSync} from "fs"
 
 export const getMessage = async (req, res, next) => {
     try {
@@ -28,3 +29,48 @@ export const getMessage = async (req, res, next) => {
       return res.status(500).send("Internal server error");
     }
   };
+
+//   export const uploadFile = async (req, res, next) => {
+//     try {
+//       if (!req.file) {
+//         return res.status(400).send("File is required");
+//       }
+  
+//       // Ensure Date.now() is used properly
+//       const date = Date.now(); // fix this variable name
+//       let fileDir = `uploads/${date}`; // fix the directory path, missing '/'
+//       let fileName = `${fileDir}/${req.file.originalname}`; // fix file path usage
+  
+//       mkdirSync(fileDir, { recursive: true });
+  
+//       renameSync(req.file.path, fileName);
+  
+//       return res.status(200).json({ filePath: fileName });
+//     } catch (error) {
+//       console.error("Error during file processing:", error);
+//       return res.status(500).send("Internal server error");
+//     }
+//   };
+  
+
+
+export const uploadFile = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send("File is required");
+    }
+
+    // Ensure Date.now() is used properly
+    const date = Date.now();
+    let fileDir = `uploads/${date}`; 
+    let fileName = `${fileDir}/${req.file.originalname}`;
+
+    mkdirSync(fileDir, { recursive: true });
+    renameSync(req.file.path, fileName);
+
+    return res.status(200).json({ filePath: fileName });
+  } catch (error) {
+    console.error("Error during file processing:", error);
+    return res.status(500).send("Internal server error");
+  }
+};
