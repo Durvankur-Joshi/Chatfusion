@@ -62,7 +62,7 @@ export const uploadFile = async (req, res, next) => {
 
     // Ensure Date.now() is used properly
     const date = Date.now();
-    let fileDir = `uploads/${date}`; 
+    let fileDir = `uploads/files`; 
     let fileName = `${fileDir}/${req.file.originalname}`;
 
     mkdirSync(fileDir, { recursive: true });
