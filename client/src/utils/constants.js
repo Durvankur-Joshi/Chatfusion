@@ -17,4 +17,5 @@ export const GET_DM_CONTACT_ROUTES = "http://localhost:8080/api/contacts/get-con
 
 export const MESSAGES_ROUTES = "/api/messages";
 export const GET_ALL_MESSAGES_ROUTES = `${MESSAGES_ROUTES}/get-message`;
+export const UPLOAD_FILE_ROUTES = `${MESSAGES_ROUTES}/upload-file`
 
