@@ -100,3 +100,59 @@ export const getContactForDMList = async (req, res, next) => {
  
   
 
+//  export const getAllContacts = async (req, res, next) => {
+//   try {
+    
+//     const users = await User.find(
+//       {_id:{$ne:req.userId}},
+//       "firstName lastName _id email"
+//     )
+       
+//     const contacts = users.map((user)=>({
+//       label:user.firstname? `${user.firstname} ${user.lastname} `: user.email
+//     }))
+//        return res.status(200).send({contacts});
+       
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Internal server error");
+//   }
+// };
+// export const getAllContacts = async (req, res, next) => {
+//   try {
+//     const users = await User.find(
+//       { _id: { $ne: req.userID } },
+//       "firstname lastname image _id email"
+//     );
+    
+//     const contacts = users.map((user) => ({
+//       label: user.firstname ,
+//       image: user.image,
+//       email : user.email
+//     }));
+
+//     return res.status(200).send({ contacts });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Internal server error");
+//   }
+// };
+export const getAllContacts = async (req, res, next) => {
+  try {
+    const users = await User.find(
+      { _id: { $ne: req.userID } },
+      "firstname lastname image _id email"
+    );
+    
+    const contacts = users.map((user) => ({
+      label: user.firstname,
+      image: user.image,
+      email: user.email,
+    }));
+
+    return res.status(200).send({ contacts });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal server error");
+  }
+};
