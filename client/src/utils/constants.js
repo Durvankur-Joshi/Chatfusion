@@ -14,6 +14,7 @@ export const LOGOUT_ROUTES = `${AUTH_ROUTES}/logout`
 export const CONTACT_ROUTES = `/api/contacts`
 export const SEARCH_CONTACT = `${CONTACT_ROUTES}/search`
 export const GET_DM_CONTACT_ROUTES = "http://localhost:8080/api/contacts/get-contacts-for-dm"
+export const GET_ALL_CONTACT_ROUTES = `${CONTACT_ROUTES}/get-all-contacts`
 
 export const MESSAGES_ROUTES = "/api/messages";
 export const GET_ALL_MESSAGES_ROUTES = `${MESSAGES_ROUTES}/get-message`;
