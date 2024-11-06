@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import ContactListComponent from "../components/contactListComponent.jsx"
 import ProfileDisplay from './ProfileInfo';
@@ -6,22 +6,22 @@ import NewDM from './NewDM';
 import { apiClient } from '../lib/api-client.js';
 import { GET_DM_CONTACT_ROUTES } from '../utils/constants.js';
 import { useAppStore } from '../store/index.js';
+import CreateChannel from './CreateChannel.jsx';
 
 
 const ContactContainer = () => {
-  const {setDirectMessagesContacts , directMessagesContacts} = useAppStore()
-useEffect(() => {
-  const getContacts = async ()=>
-  {
-    const response =  await apiClient.get(GET_DM_CONTACT_ROUTES,{
-      withCredentials:true
-    });
-    if (response.data.contacts) {
-      setDirectMessagesContacts(response.data.contacts)
+  const { setDirectMessagesContacts, directMessagesContacts } = useAppStore()
+  useEffect(() => {
+    const getContacts = async () => {
+      const response = await apiClient.get(GET_DM_CONTACT_ROUTES, {
+        withCredentials: true
+      });
+      if (response.data.contacts) {
+        setDirectMessagesContacts(response.data.contacts)
+      }
     }
-  }
-  getContacts();
-}, [])
+    getContacts();
+  }, [])
 
 
   return (
@@ -34,14 +34,16 @@ useEffect(() => {
       {/* Contacts List */}
       <div className='gird '>
         <div className='flex items-center justify-between gap-6'>
-         <h6>Direct Message</h6>
-         <NewDM/>
+          <h6>Direct Message</h6>
+          <NewDM />
         </div>
         <div>
-          <ContactListComponent contacts ={directMessagesContacts}/>
-                  </div>
-        <div>
-         <h6 className="flex items-center justify-between ">Channel</h6>
+          <ContactListComponent contacts={directMessagesContacts} />
+        </div>
+        <div className='flex items-center justify-between gap-6'>
+          <h6 className="flex items-center justify-between ">Channel</h6>
+          <CreateChannel/>
+
         </div>
       </div>
 
