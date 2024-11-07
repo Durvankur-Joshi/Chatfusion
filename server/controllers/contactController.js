@@ -145,6 +145,7 @@ export const getAllContacts = async (req, res, next) => {
     );
     
     const contacts = users.map((user) => ({
+      _id:user.id,
       label: user.firstname,
       image: user.image,
       email: user.email,
