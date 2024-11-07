@@ -29,6 +29,8 @@ import User from "../models/User.js";
 //     return response.status(500).send("Internal Server Error");
 //   }
 // };
+
+
 export const createChannel = async (request, response, next) => {
   try {
     const { name, members } = request.body;
