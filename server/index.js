@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import messageRoutes from "./routes/MessageRoutes.js";
 import setupSocket from "./socket.js";
+import channelRoutes from "./routes/ChannelRoutes.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/uploads/files", express.static("uploads/files"));
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/channel', channelRoutes);
 
 // Start the server
 const server = app.listen(port, () => {
