@@ -1,6 +1,8 @@
 
 import { Server as SocketIOServer } from 'socket.io'
 import Message from './models/MessageModel.js';
+import Channel from './models/ChannelModel.js';
+import User from './models/User.js';
 
 const setupSocket = (server) => {
     const io = new SocketIOServer(server, {
@@ -44,6 +46,88 @@ const setupSocket = (server) => {
                 }
                 
             }
+
+
+
+            const sendChannelMessage = async (message) => {
+                const { channelId, sender, content, messageType, fileUrl } = message;
+            
+                const createdMessage = await Message.create({
+                    sender,
+                    recipient: null,
+                    content,
+                    messageType,
+                    timestamp: new Date(),
+                    fileUrl,
+                });
+            
+                const messageData = await Message.findById(createdMessage._id)
+                    .populate("sender", "id email firstName lastName image color")
+                    .exec();
+            
+                await Channel.findByIdAndUpdate(channelId, {
+                    $push: { messages: createdMessage._id },
+                });
+            
+                const channel = await Channel.findById(channelId).populate("members");
+            
+                const finalData = { ...messageData._doc, channelId: channel._id };
+            
+                if (channel && channel.members) {
+                    channel.members.forEach((member) => {
+                        const memberSocketId = userSocketMap.get(member._id.toString());
+                        if (memberSocketId) {
+                            io.to(memberSocketId).emit("receive-channel-message", finalData);
+                        }
+                    });
+            
+                    
+                }
+            };
+        
+            // const sendChannelMessage = async (message) => {
+            //     try {
+            //         const { channelId, sender, content, messageType, fileUrl } = message;
+            
+            //         // Create the message
+            //         const createdMessage = await Message.create({
+            //             sender,
+            //             recipient: null,
+            //             content,
+            //             messageType,
+            //             timestamp: new Date(),
+            //             fileUrl,
+            //         });
+            
+            //         // Populate message data for response
+            //         const messageData = await Message.findById(createdMessage._id)
+            //             .populate("sender", "id email firstName lastName image ") // Ensure correct reference
+            //             .exec();
+            
+            //         // Push message to the channel's message array
+            //         await Channel.findByIdAndUpdate(channelId, {
+            //             $push: { messages: createdMessage._id },
+            //         });
+            
+            //         // Populate the channel data including members
+            //         const channel = await Channel.findById(channelId).populate("members");
+            
+            //         const finalData = { ...messageData._doc, channelId: channel._id };
+            
+            //         // Send the message to each channel member
+            //         if (channel && channel.members) {
+            //             channel.members.forEach((member) => {
+            //                 const memberSocketId = userSocketMap.get(member._id.toString());
+            //                 if (memberSocketId) {
+            //                     io.to(memberSocketId).emit("receive-channel-message", finalData);
+            //                 }
+            //             });
+            //         }
+            //     } catch (error) {
+            //         console.error("Error in sendChannelMessage:", error);
+            //     }
+            // };
+            
     io.on("connection", (socket) => {
         const userId = socket.handshake.query.userId;
 
@@ -54,8 +138,8 @@ const setupSocket = (server) => {
             console.log("User ID not provided during connection");
 
         }
-
         socket.on("sendMessage" ,sendMessage)
+        socket.on("send-channel-message" , sendChannelMessage)
         socket.on("disconnect", () => disconnect(socket));
 
     })
