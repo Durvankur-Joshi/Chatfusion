@@ -37,9 +37,25 @@ export const SocketProvider = ({ children }) => {
           addMessage(message); // Update store with new message
         }
       };
-
+    
+      const handleReceiveChannelMessage = (message) => {
+        const { selectedChatData, selectedChatType, addMessage } = useAppStore.getState();
+      
+        if (
+          selectedChatType === "channel" &&
+          selectedChatData &&
+          selectedChatData._id === message.channelId
+        ) {
+          console.log("Adding message to chat:", message);
+          addMessage(message);
+        } else {
+          console.log("Message does not belong to the selected chat.");
+        }
+      };
+      
       // Listen for the 'receiveMessage' event
       socket.current.on("receiveMessage", handleReceiveMessage);
+      socket.current.on("receive-channel-message" , handleReceiveChannelMessage)
 
       // Cleanup on component unmount or user logout
       return () => {
