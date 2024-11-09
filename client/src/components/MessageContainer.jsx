@@ -2,13 +2,13 @@ import React, { useRef, useEffect , useState } from 'react';
 import { useAppStore } from '../store';
 import moment from "moment";
 import { apiClient } from '../lib/api-client';
-import { GET_ALL_MESSAGES_ROUTES, HOST } from '../utils/constants';
+import { GET_ALL_MESSAGES_ROUTES, HOST , GET_CHANNEL_MESSAGES} from '../utils/constants';
 import { FaFileDownload } from 'react-icons/fa';
 import { IoMdCloseCircle, IoMdFolder } from 'react-icons/io';
 
 const MessageContainer = () => {
   const scrollRef = useRef();
-  const { selectedChatData, selectedChatType, selectedChatMessage, setSelectedChatMessage } = useAppStore();
+  const { selectedChatData, selectedChatType, selectedChatMessage, setSelectedChatMessage ,userInfo } = useAppStore();
   const [showImage, setShowImage] = useState(false);
   const [imageURL, setImageURL] = useState(null)
 
@@ -26,9 +26,24 @@ const MessageContainer = () => {
         console.log({ error })
       }
     }
+    const getChannelMessages = async () => {
+      try {
+        const response = await apiClient.get(
+          `${GET_CHANNEL_MESSAGES}/${selectedChatData._id}`,
+          { withCredentials: true }
+        );
+        if (response.data.messages) {
+          setSelectedChatMessage(response.data.messages);
+        }
+      } catch (error) {
+        console.log({ error });
+      }
+    };
+    
 
     if (selectedChatData._id) {
       if (selectedChatType === "contact") getMessages();
+      else if (selectedChatType === "channel") getChannelMessages()
     }
   }, [selectedChatData, selectedChatType, setSelectedChatMessage])
 
@@ -59,8 +74,11 @@ const MessageContainer = () => {
               {moment(message.timestamp).format("LL")}
             </div>
           )}
-          {/* Render messages for both sender and receiver */}
-          {renderDMMessage(message)}
+          
+          {selectedChatType === "contact" && renderDMMessage(message)}
+
+          {selectedChatType === "channel" && renderChannelMessage(message)}
+
         </div>
       );
     });
@@ -132,6 +150,77 @@ const MessageContainer = () => {
       </div>
     );
   };
+
+  const renderChannelMessage = (message) => {
+    const isSender = message.sender._id === userInfo.id;
+    
+    return (
+      <div className={`mt-5 ${isSender ? "text-right" : "text-left"}`}>
+        {message.messageType === 'text' && (
+          <div
+            className={`${
+              isSender
+                ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+                : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
+            } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
+          >
+            {message.content}
+          </div>
+        )}
+        {!isSender && (
+          <div className="flex items-center gap-3 mt-2">
+            <div className="h-8 w-8 rounded-full overflow-hidden">
+              {message.sender.image ? (
+                <img
+                  src={`${HOST}/${message.sender.image}`}
+                  alt="User Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-500">No Image</span>
+              )}
+            </div>
+            <div className="text-sm text-gray-400">
+              {moment(message.timestamp).format("LT")}
+            </div>
+          </div>
+        )}
+         {message.messageType === 'file' && (
+          <div
+            className={`${isSender
+              ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+              :"bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
+              } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
+          >
+            {checkIfImage(message.fileUrl) ? <div className=' cursor-pointer'
+              onClick={() => {
+                setShowImage(true)
+                setImageURL(message.fileUrl)
+
+              }}>
+              <img src={`${HOST}/${message.fileUrl}`} height={300} width={300} />
+            </div> :
+              <div className=' flex items-center justify-center gap-4'>
+                <span className=' text-white/80 text-3xl bg-black/20 rounded-full p-3'>
+                  <IoMdFolder />
+                </span>
+                <span>
+                  {message.fileUrl.split(
+                    "/").pop()
+                  }
+                </span>
+                <span className='bg-black/20 p-3 text-2xl rounded-full hover:bg-black/50 cursor-pointer transition-all duration-300'
+                  onClick={() => downloadFile(message.fileUrl)}>
+                  <FaFileDownload />
+                </span>
+
+              </div>}
+          </div>
+        )}
+      </div>
+    );
+  };
+  
 
   return (
     <div className="flex-1 p-4 bg-gray-900">
