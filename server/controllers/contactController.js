@@ -151,7 +151,7 @@ export const getAllContacts = async (req, res, next) => {
       email: user.email,
     }));
 
-    return res.status(200).send({ contacts });
+    return res.status(200).json({ contacts });
   } catch (error) {
     console.log(error);
     return res.status(500).send("Internal server error");
