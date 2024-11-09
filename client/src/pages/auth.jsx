@@ -1,94 +1,87 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import { useAppStore } from '../store'; // Import your Zustand store
+import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
 import { LOGIN_ROUTES, SIGNUP_ROUTES } from '../utils/constants';
-import axios from 'axios';
-
-  
-  
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Auth = () => {
   const [email, setEmail] = useState("");
-  const {setUserInfo} = useAppStore();
+  const { setUserInfo } = useAppStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [activeTab, setActiveTab] = useState("signup"); // State to manage active tab
-  const navigate = useNavigate(); 
+  const [activeTab, setActiveTab] = useState("signup");
+  const navigate = useNavigate();
 
   const validateSignup = () => {
     if (!email.length) {
-      alert('Email is required');
+      toast.error('Email is required');
       return false;
     }
     if (!password.length) {
-      alert('Password is required');
+      toast.error('Password is required');
       return false;
     }
     if (password !== confirmPassword) {
-      alert('Password and confirm password do not match');
+      toast.error('Password and confirm password do not match');
       return false;
     }
     return true;
   };
 
-  const validateLogin = () =>{
+  const validateLogin = () => {
     if (!email.length) {
-      alert('Email is required');
+      toast.error('Email is required');
       return false;
     }
     if (!password.length) {
-      alert('Password is required');
+      toast.error('Password is required');
       return false;
     }
-    return true
-  }
-
-  const handleSignUp = async (event) => {
-    if (validateSignup) {
-      const response = await apiClient.post(SIGNUP_ROUTES , {email , password} , { withCredentials: true});
-       
-      console.log({response});
-      
-    }else {
-      console.error(error);
-
+    return true;
   };
-}
 
+  const handleSignUp = async () => {
+    if (validateSignup()) {
+      try {
+        const response = await apiClient.post(SIGNUP_ROUTES, { email, password }, { withCredentials: true });
+        toast.success('Signup successful! You can now log in.');
+        console.log({ response });
+      } catch (error) {
+        toast.error('Signup failed. Please try again.');
+        console.error(error);
+      }
+    }
+  };
 
   const handleLogin = async () => {
-    if (validateLogin()) {  // Ensure this is a function if needed
+    if (validateLogin()) {
       try {
         const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
-  
+
         if (response.data.user && response.data.user.id) {
-          // Set user info in state
           setUserInfo(response.data.user);
-  
-          // Redirect based on profile setup status
+          toast.success('Login successful!');
+
           if (response.data.user.profileSetup) {
             navigate("/chat");
           } else {
             navigate("/profile");
           }
         } else {
-          console.error("Login failed: User not found");
+          toast.error("Login failed: User not found");
         }
       } catch (error) {
+        toast.error("Error during login: Invalid credentials");
         console.error("Error during login:", error);
-        // Optionally, show an error message to the user (e.g., invalid credentials)
       }
-    } else {
-      console.log("Login validation failed");
-      // Optionally, show a message about validation failure (e.g., "Please fill in all fields")
     }
-  }
+  };
 
-  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
       <div className="bg-gray-900 text-white shadow-lg rounded-xl p-8 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] xl:max-w-[40vw]">
         <div className="flex justify-center space-x-8 mb-6">
           <button
@@ -195,4 +188,4 @@ const Auth = () => {
   );
 };
 
-export default Auth
+export default Auth;
