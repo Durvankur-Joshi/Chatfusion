@@ -4,13 +4,13 @@ import ContactListComponent from "../components/contactListComponent.jsx"
 import ProfileDisplay from './ProfileInfo';
 import NewDM from './NewDM';
 import { apiClient } from '../lib/api-client.js';
-import { GET_DM_CONTACT_ROUTES } from '../utils/constants.js';
+import { GET_DM_CONTACT_ROUTES, GET_USER_CHANNEL_ROUTES } from '../utils/constants.js';
 import { useAppStore } from '../store/index.js';
 import CreateChannel from './CreateChannel.jsx';
 
 
 const ContactContainer = () => {
-  const { setDirectMessagesContacts, directMessagesContacts } = useAppStore()
+  const { setDirectMessagesContacts, directMessagesContacts  , channels , setChannels} = useAppStore()
   useEffect(() => {
     const getContacts = async () => {
       const response = await apiClient.get(GET_DM_CONTACT_ROUTES, {
@@ -20,8 +20,18 @@ const ContactContainer = () => {
         setDirectMessagesContacts(response.data.contacts)
       }
     }
+    const getChannels = async () => {
+      const response = await apiClient.get(GET_USER_CHANNEL_ROUTES, {
+        withCredentials: true
+      });
+      if (response.data.channels) {
+        setChannels(response.data.channels)
+        console.log(response.data.channels)
+      }
+    }
     getContacts();
-  }, [])
+    getChannels();
+  }, [setChannels , setDirectMessagesContacts])
 
 
   return (
@@ -43,8 +53,8 @@ const ContactContainer = () => {
         <div className='flex items-center justify-between gap-6'>
           <h6 className="flex items-center justify-between ">Channel</h6>
           <CreateChannel/>
-
         </div>
+        <ContactListComponent contacts={channels} isChannel={true} />
       </div>
 
       {/* Profile Display */}
