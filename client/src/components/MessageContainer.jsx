@@ -155,14 +155,13 @@ const MessageContainer = () => {
     const isSender = message.sender._id === userInfo.id;
     
     return (
-      <div className={`mt-5 ${isSender ? "text-right" : "text-left"}`}>
+      <div className={`${message.sender._id !== userInfo.id ? "text-left" : "text-right"}`}>
         {message.messageType === 'text' && (
           <div
-            className={`${
-              isSender
-                ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-                : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
-            } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
+            className={`${ message.sender._id === userInfo.id 
+              ? "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"
+              : "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+              } border inline-block p-4 rounded my-1 max-w-[50%] break-words`}
           >
             {message.content}
           </div>
