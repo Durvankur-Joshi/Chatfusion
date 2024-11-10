@@ -46,9 +46,12 @@ const MessageBar = () => {
     if (selectedChatType === "contact") {
       messageData.recipient = selectedChatData._id;
       socket.emit("sendMessage", messageData);
+      addMessage(messageData
+      )
     } else if (selectedChatType === "channel") {
       messageData.channelId = selectedChatData._id;
       socket.emit("send-channel-message", messageData);
+      addMessage(messageData)
     }
   
     // Clear input field
@@ -127,10 +130,12 @@ const handleAttachmentChange = async (event) => {
             sendMessage.recipient = selectedChatData._id;
             socket.emit("sendMessage", sendMessage);
             console.log("File sent to contact:", sendMessage);
+            addMessage(sendMessage)
         } else if (selectedChatType === "channel") {
             sendMessage.channelId = selectedChatData._id;
             socket.emit("send-channel-message", sendMessage);
             console.log("File sent to channel:", sendMessage);
+            addMessage(sendMessage)
         }
         
         
