@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { HOST } from '../utils/constants';
 
 const MultiSelect = ({ contacts = [], selectedContacts, onToggleSelect }) => {
@@ -8,8 +10,22 @@ const MultiSelect = ({ contacts = [], selectedContacts, onToggleSelect }) => {
     (contact.label || contact.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  
+
+  const handleToggleSelect = (contact) => {
+    onToggleSelect(contact);
+    const isSelected = selectedContacts.some((c) => c._id === contact._id);
+    if (isSelected) {
+      toast.info(`${contact.label} deselected`);
+    } else {
+      toast.success(`${contact.label} selected`);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-800 rounded-lg shadow-lg max-w-md mx-auto">
+      {/* <ToastContainer position="top-right" autoClose={3000} hideProgressBar /> */}
+
       <div className="mb-4">
         <label className="flex items-center gap-2 bg-gray-700 rounded-lg p-2">
           <input
@@ -23,6 +39,7 @@ const MultiSelect = ({ contacts = [], selectedContacts, onToggleSelect }) => {
           </svg>
         </label>
       </div>
+
       <div className="mt-4 mb-4">
         <h4 className="text-white font-semibold mb-2">Selected Contacts:</h4>
         <div className="flex gap-2 flex-wrap">
@@ -33,25 +50,26 @@ const MultiSelect = ({ contacts = [], selectedContacts, onToggleSelect }) => {
           ))}
         </div>
       </div>
+
       <ul className="space-y-3">
-      <div className = "overflow-y-auto max-h-64 hover:text-purple-700 p-2 rounded" style={{ maxHeight: '200px' }}>
-        {filteredContacts.map((contact) => (
-          <li
-            key={contact._id}
-            onClick={() => onToggleSelect(contact)}
-            className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors duration-150 
-              ${selectedContacts.some((c) => c._id === contact._id) ? 'bg-purple-700' : 'hover:bg-gray-700'}
-            `}
-          >
-            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-600">
-              <img src={`${HOST}/${contact.image}`} alt={contact.label} className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <p className="text-white font-medium">{contact.label}</p>
-              <p className="text-gray-400 text-sm">{contact.email}</p>
-            </div>
-          </li>
-        ))}
+        <div className="overflow-y-auto max-h-64 hover:text-purple-700 p-2 rounded" style={{ maxHeight: '200px' }}>
+          {filteredContacts.map((contact) => (
+            <li
+              key={contact._id}
+              onClick={() => handleToggleSelect(contact)}
+              className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors duration-150 
+                ${selectedContacts.some((c) => c._id === contact._id) ? 'bg-purple-700' : 'hover:bg-gray-700'}
+              `}
+            >
+              <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-gray-600">
+                <img src={`${HOST}/${contact.image}`} alt={contact.label} className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <p className="text-white font-medium">{contact.label}</p>
+                <p className="text-gray-400 text-sm">{contact.email}</p>
+              </div>
+            </li>
+          ))}
         </div>
       </ul>
     </div>
