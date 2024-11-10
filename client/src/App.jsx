@@ -16,13 +16,13 @@ import { useState, useEffect } from 'react';
 const PrivateRoute = ({ children }) => {
   const { userInfo } = useAppStore();
   const isAuthenticated = !!userInfo;
-  return isAuthenticated ? children : <Navigate to="/profile" />;
+  return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
 const AuthRoute = ({ children }) => {
   const { userInfo } = useAppStore();
   const isAuthenticated = !!userInfo; 
-  return isAuthenticated ? <Navigate to="/chat" /> : children;
+  return isAuthenticated ? <Navigate to="/profile" /> : children;
 };
 
 function App() {
