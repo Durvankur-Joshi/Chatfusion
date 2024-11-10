@@ -5,21 +5,14 @@ import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
 import { ADD_PROFILE_IMAGE_ROUTES, UPDATE_PROFILE_ROUTES } from '../utils/constants';
 import { FaTrashAlt } from 'react-icons/fa';
-
-const avatars = [
-  'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg',
-  'https://static.vecteezy.com/system/resources/thumbnails/001/993/889/small_2x/beautiful-latin-woman-avatar-character-icon-free-vector.jpg',
-  'https://static.vecteezy.com/system/resources/thumbnails/002/002/332/small/ablack-man-avatar-character-isolated-icon-free-vector.jpg',
-  'https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small/man-with-beard-avatar-character-isolated-icon-free-vector.jpg',
-];
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Profile = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [profileColor, setProfileColor] = useState('#ffffff');
   const [Image, setImage] = useState(null);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useAppStore();
 
@@ -31,16 +24,16 @@ const Profile = () => {
 
   useEffect(() => {
     if (userInfo?.profileSetup) {
-      setFirstName(userInfo.firstname);
-      setLastName(userInfo.lastname);
+      setFirstname(userInfo.firstname);
+      setLastname(userInfo.lastname);
       setProfileColor(userInfo.profileColor);
       setImage(userInfo.image);
     }
   }, [userInfo]);
 
   const validateProfile = () => {
-    if (!firstName || !lastName) {
-      setShowToast(true);
+    if (!firstname || !lastname) {
+      toast.error("Please fill all required fields!");
       return false;
     }
     return true;
@@ -52,19 +45,21 @@ const Profile = () => {
         const response = await apiClient.post(
           UPDATE_PROFILE_ROUTES,
           {
-            firstName,
-            lastName,
+            firstname,
+            lastname,
             profileColor,
-            Image: selectedAvatar || Image,
+            Image,
           },
           { withCredentials: true }
         );
   
         if (response.status === 200 && response.data) {
           setUserInfo({ ...response.data });
+          toast.success("Profile updated successfully!");
           navigate("/chat");
         }
       } catch (error) {
+        toast.error("Error updating profile.");
         console.error("Error updating profile:", error.response?.data || error.message);
       }
     }
@@ -72,59 +67,36 @@ const Profile = () => {
   
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    console.log({file});
     
     if (file) {
       const formData = new FormData();
       formData.append("profile-image", file);
   
-        const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTES, formData , { withCredentials: true });
+      const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTES, formData, { withCredentials: true });
 
-        if (response.status === 200 && response.data.image) {
-          setUserInfo({ ...userInfo, image: response.data.image });
-          setShowToast("Image uploaded successfully");
-        }
-       const render = new FileReader();
-       render.onload =() =>
-       {
-        setImage(render.result);
-       }
-        render.readAsDataURL(file);
+      if (response.status === 200 && response.data.image) {
+        setUserInfo({ ...userInfo, image: response.data.image });
+        toast.success("Image uploaded successfully");
       }
+      const render = new FileReader();
+      render.onload = () => {
+        setImage(render.result);
+      };
+      render.readAsDataURL(file);
     }
-  
-  
-
- 
-
-  
-  
-
-  const handleAvatarSelect = (avatar) => {
-    setSelectedAvatar(avatar);
-    setImage(null);
   };
 
   const handleDeleteImage = () => {
     setImage(null);
-    setSelectedAvatar(null);
+    toast.info("Image removed.");
   };
 
   const calculateProgress = () => {
     let progress = 0;
-    if (firstName) progress += 30;
-    if (lastName) progress += 30;
-    if (Image || selectedAvatar) progress += 40;
+    if (firstname) progress += 50;
+    if (lastname) progress += 50;
     return progress;
   };
-
-  useEffect(() => {
-    if (showToast) {
-      gsap.fromTo(".toast", { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
-    }
-  }, [showToast]);
-
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
@@ -137,9 +109,7 @@ const Profile = () => {
               className="profile-image w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden mb-4 hover:scale-110 transition-transform relative"
               style={{ backgroundColor: profileColor }}
             >
-              {selectedAvatar ? (
-                <img src={selectedAvatar} alt="Avatar" className="w-full h-full object-cover" />
-              ) : Image ? (
+              {Image ? (
                 <img src={Image} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-500">No image</span>
@@ -160,21 +130,10 @@ const Profile = () => {
             />
             <label
               htmlFor="profileImageUpload"
-              className="cursor-pointer bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
+              className="cursor-pointer bg-purple-700 hover:bg-purple-800 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
             >
               Upload Profile Image
             </label>
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
-              {avatars.map((avatar, index) => (
-                <img
-                  key={index}
-                  src={avatar}
-                  alt={`Avatar ${index + 1}`}
-                  className={`w-16 h-16 rounded-full cursor-pointer hover:scale-105 transition-transform ${selectedAvatar === avatar ? 'ring-4 ring-blue-500' : ''}`}
-                  onClick={() => handleAvatarSelect(avatar)}
-                />
-              ))}
-            </div>
           </div>
 
           <div className="flex flex-col justify-center">
@@ -184,8 +143,8 @@ const Profile = () => {
                 type="text"
                 className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors duration-300"
                 placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
               />
             </label>
 
@@ -195,8 +154,8 @@ const Profile = () => {
                 type="text"
                 className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors duration-300"
                 placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
               />
             </label>
 
@@ -212,7 +171,7 @@ const Profile = () => {
 
             <button
               onClick={handleProfileSave}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-bold hover:shadow-lg transition-shadow"
             >
               Save Profile
             </button>
@@ -221,7 +180,7 @@ const Profile = () => {
               <div className="text-gray-300 text-sm">Profile Completion: {calculateProgress()}%</div>
               <div className="h-4 w-full bg-gray-700 rounded-lg mt-2">
                 <div
-                  className="h-full bg-blue-500 rounded-lg"
+                  className="h-full bg-purple-500 rounded-lg"
                   style={{ width: `${calculateProgress()}%` }}
                 ></div>
               </div>
@@ -230,13 +189,9 @@ const Profile = () => {
         </div>
       </div>
 
-      {showToast && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg toast">
-          Please fill all required fields!
-        </div>
-      )}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
-);
+  );
+};
 
-}
-  export default Profile;
+export default Profile;
