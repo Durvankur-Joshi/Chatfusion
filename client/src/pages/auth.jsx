@@ -46,14 +46,25 @@ const Auth = () => {
     if (validateSignup()) {
       try {
         const response = await apiClient.post(SIGNUP_ROUTES, { email, password }, { withCredentials: true });
-        toast.success('Signup successful! You can now log in.');
-        console.log({ response });
+        if (response.status === 200) { // assuming signup returns a 201 Created status
+          toast.success('Signup successful!');
+          navigate("/profile");
+          setUserInfo(response.data.user);
+          console.log(response.data.user)
+        } else {
+          toast.error('Unexpected response. Please try again.');
+        }
       } catch (error) {
-        toast.error('Signup failed. Please try again.');
-        console.error(error);
+        if (error.response && error.response.data && error.response.data.message) {
+          toast.error(error.response.data.message); // show specific error from server
+        } else {
+          toast.error('Signup failed. Please try again.');
+        }
+        console.error("Error during signup:", error);
       }
     }
   };
+  
 
   const handleLogin = async () => {
     if (validateLogin()) {
@@ -61,10 +72,10 @@ const Auth = () => {
         const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
 
         if (response.data.user && response.data.user.id) {
-          setUserInfo(response.data.user);
           toast.success('Login successful!');
-
-          if (response.data.user.profileSetup) {
+          setUserInfo(response.data.user);
+          
+          if (response.data.user.profileSetup === true) {
             navigate("/chat");
           } else {
             navigate("/profile");
@@ -86,13 +97,13 @@ const Auth = () => {
         <div className="flex justify-center space-x-8 mb-6">
           <button
             onClick={() => setActiveTab("signup")}
-            className={`py-2 px-4 rounded-lg font-semibold ${activeTab === "signup" ? "bg-indigo-600" : "bg-gray-800"}`}
+            className={`py-2 px-4 rounded-lg font-semibold ${activeTab === "signup" ? "bg-purple-700" : "bg-gray-800"}`}
           >
             Sign Up
           </button>
           <button
             onClick={() => setActiveTab("login")}
-            className={`py-2 px-4 rounded-lg font-semibold ${activeTab === "login" ? "bg-indigo-600" : "bg-gray-800"}`}
+            className={`py-2 px-4 rounded-lg font-semibold ${activeTab === "login" ? "bg-purple-700" : "bg-gray-800"}`}
           >
             Login
           </button>
@@ -102,7 +113,7 @@ const Auth = () => {
           <div className="grid lg:grid-cols-2 gap-8">
             <div className="flex flex-col items-center justify-center text-center">
               <h1 className="text-4xl lg:text-5xl font-bold text-indigo-100">Welcome</h1>
-              <p className="mt-4 text-lg lg:text-xl text-gray-00">Fill in the details to get started!</p>
+              <p className="mt-4 text-lg lg:text-xl text-gray-300">Fill in the details to get started!</p>
             </div>
             <div className="flex flex-col justify-center items-center">
               <div className="w-full space-y-4">
@@ -110,7 +121,7 @@ const Auth = () => {
                   <span className="text-gray-300">Email</span>
                   <input
                     type="email"
-                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -120,7 +131,7 @@ const Auth = () => {
                   <span className="text-gray-300">Password</span>
                   <input
                     type="password"
-                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="********"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -130,7 +141,7 @@ const Auth = () => {
                   <span className="text-gray-300">Confirm Password</span>
                   <input
                     type="password"
-                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="mt-1 block w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
                     placeholder="********"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -138,7 +149,7 @@ const Auth = () => {
                 </label>
                 <button
                   onClick={handleSignUp}
-                  className="w-full py-2 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500"
+                  className="w-full py-2 mt-4 bg-purple-700 hover:bg-purple-900 text-white font-semibold rounded-lg focus:outline-none focus:ring-4 focus:ring-purple-600"
                 >
                   Sign Up
                 </button>
@@ -175,7 +186,7 @@ const Auth = () => {
                 </label>
                 <button
                   onClick={handleLogin}
-                  className="w-full py-2 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500"
+                  className="w-full py-2 mt-4 bg-purple-700 hover:bg-purple-900 text-white font-semibold rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500"
                 >
                   Login
                 </button>
