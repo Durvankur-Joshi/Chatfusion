@@ -4,6 +4,7 @@ import { apiClient } from '../lib/api-client';
 import { GET_ALL_CONTACT_ROUTES, CREATE_CHANNEL_ROUTES } from '../utils/constants';
 import { useAppStore } from '../store';
 import MultiSelect from './MultiSelect';
+import { toast, ToastContainer } from 'react-toastify';
 
 const CreateChannel = () => {
   const { setSelectedChatType, setSelectedChatData, addChannel } = useAppStore();
@@ -42,14 +43,19 @@ const CreateChannel = () => {
           setChannelName('');
           setSelectedContacts([]);
           addChannel(response.data.channel);
+
+          // Show success toast and close the modal
+          toast.success("Channel created successfully!");
+          modalRef.current.close();
         } else {
           console.log('Failed to create channel:', response.data);
         }
       } else {
-        console.log('Channel name and contacts are required.');
+        toast.error("Channel name and members are required");
       }
     } catch (error) {
       console.error('Error creating channel:', error);
+      toast.error("Error creating channel. Please try again.");
     }
   };
 
@@ -82,7 +88,6 @@ const CreateChannel = () => {
                 value={channelName}
               />
             </label>
-           
 
             <MultiSelect
               contacts={allContacts}
@@ -90,20 +95,22 @@ const CreateChannel = () => {
               onToggleSelect={(contact) => {
                 setSelectedContacts((prev) =>
                   prev.some((c) => c._id === contact._id)
-                ? prev.filter((c) => c._id !== contact._id)
-                : [...prev, contact]
+                    ? prev.filter((c) => c._id !== contact._id)
+                    : [...prev, contact]
                 );
               }}
-              />
-             
+            />
+
             <button
               className="w-full bg-purple-700 hover:bg-purple-900 transition-all duration-300 text-white mt-5 rounded-lg h-9"
               onClick={createChannel}
+              type="button"
             >
               Create Channel
             </button>
           </div>
         </div>
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       </dialog>
     </>
   );
