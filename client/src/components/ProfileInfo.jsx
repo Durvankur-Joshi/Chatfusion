@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../lib/api-client';
 
 const ProfileDisplay = () => {
-  const { userInfo , setuserInfo} = useAppStore(); // Access userInfo from the store
+  const { userInfo , setUserInfo} = useAppStore(); // Access userInfo from the store
   const [isHovered, setIsHovered] = useState(false); // State to track hover
   const navigate = useNavigate();
 
@@ -18,7 +18,8 @@ const ProfileDisplay = () => {
 
       if (response.status === 200) {
         navigate("/auth");
-        setuserInfo(null);
+        setUserInfo(null);
+        console.log("done")
       }
     } catch (error) {
       console.log(error);
@@ -37,7 +38,7 @@ const ProfileDisplay = () => {
         >
           {userInfo && userInfo.image ? (
             <img
-              src={`${HOST}/${userInfo.image}`}
+              src={`${HOST}/${userInfo.image }`}
               alt="User Profile"
               className="w-full h-full object-cover"
             />
