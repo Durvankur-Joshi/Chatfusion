@@ -110,7 +110,7 @@ const CreateChannel = () => {
             </button>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+        <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       </dialog>
     </>
   );
