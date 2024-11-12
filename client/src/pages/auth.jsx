@@ -70,12 +70,15 @@ const Auth = () => {
     if (validateLogin()) {
       try {
         const response = await apiClient.post(LOGIN_ROUTES, { email, password }, { withCredentials: true });
-
+  
         if (response.data.user && response.data.user.id) {
           toast.success('Login successful!');
           setUserInfo(response.data.user);
           
-          if (response.data.user.profileSetup === true) {
+          // Log the profileSetup status for debugging
+          console.log("Profile Setup Status:", response.data.user.profileSetup);
+  
+          if (response.data.user.profileSetup === true ) {
             navigate("/chat");
           } else {
             navigate("/profile");
@@ -89,10 +92,11 @@ const Auth = () => {
       }
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 via-gray-900 to-black">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
       <div className="bg-gray-900 text-white shadow-lg rounded-xl p-8 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[50vw] xl:max-w-[40vw]">
         <div className="flex justify-center space-x-8 mb-6">
           <button
