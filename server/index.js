@@ -22,7 +22,9 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+// Increase payload size limit for JSON and URL-encoded data
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
 app.use("/uploads/profiles", express.static("uploads/profiles"));
