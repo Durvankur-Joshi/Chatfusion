@@ -24,7 +24,6 @@ authRoutes.get("/user-info", verifyToken, getUserInfo);
 // Profile Routes
 authRoutes.post("/update-profile", verifyToken, updateProfile);
 authRoutes.post("/add-profile-image", verifyToken, upload.single("profile-image"), addProfileImage);
-
 authRoutes.delete("/remove-profile-image", verifyToken, removeProfileImage);
 authRoutes.post("/logout" , logout);
 
