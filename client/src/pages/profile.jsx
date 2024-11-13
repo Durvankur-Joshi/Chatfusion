@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useAppStore } from '../store';
 import { apiClient } from '../lib/api-client';
-import { ADD_PROFILE_IMAGE_ROUTES, UPDATE_PROFILE_ROUTES } from '../utils/constants';
+import { ADD_PROFILE_IMAGE_ROUTES, UPDATE_PROFILE_ROUTES, DELETE_PROFILE_IMAGE_ROUTES } from '../utils/constants';
 import { FaTrashAlt } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -86,10 +86,24 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteImage = () => {
-    setImage(null);
-    toast.info("Image removed.");
+  const handleDeleteImage = async () => {
+    try {
+      const response = await apiClient.delete(DELETE_PROFILE_IMAGE_ROUTES, { withCredentials: true });
+  
+      if (response.status === 200 && response.data.profileImage) {
+        // Update with the default image URL provided by the backend
+        const defaultImageUrl = response.data.profileImage;
+  
+        setUserInfo({ ...userInfo, image: defaultImageUrl });
+        setImage(defaultImageUrl); // Set the default image
+        toast.success("Profile image deleted successfully.");
+      }
+    } catch (error) {
+      toast.error("Failed to delete image.");
+      console.error("Error deleting profile image:", error.response?.data || error.message);
+    }
   };
+  
 
   const calculateProgress = () => {
     let progress = 0;
