@@ -20,17 +20,7 @@ const ChatHeader = () => {
           ) : (
             <span className="flex items-center justify-center w-full h-full text-2xl text-gray-950  bg-gray-700">{selectedChatData.name ? selectedChatData.name.charAt(0).toUpperCase() : "?"}</span>
           )}
-          {/* {contact.image ? (
-        <img
-            src={`${HOST}/${contact.image}`}
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.src = ""; }} // fallback image
-        />
-    ) : (
-        <span className="text-gray-950 font-bold text-sm sm:text-lg md:text-base">
-            {contact.name ? contact.name.charAt(0).toUpperCase() : "?"}
-        </span>
-    )} */}
+          
         </div>
         {/* Contact Information */}
         <div className="text-left">
