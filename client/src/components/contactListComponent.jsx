@@ -34,14 +34,7 @@ const ContactListComponent = ({ contacts, isChannel = false }) => {
                     }
                     onClick={() => handleClick(contact)}
                 >
-                    {/* Profile Image */}
-                    {/* <div className="relative flex-shrink-0 h-5 w-5 sm:h-14 sm:w-14 md:h-10 md:w-10 rounded-full overflow-hidden border border-gray-300">
-                        <img
-                            src={contact.image ? `${HOST}/${contact.image}` : "" }
-                            className="w-full h-full object-cover"
-                            onError={(e) => { e.target.src = ""; }} // fallback image
-                        />
-                    </div> */}
+                    
                     <div className="relative flex-shrink-0 h-5 w-5 sm:h-14 sm:w-14 md:h-10 md:w-10 rounded-full overflow-hidden border border-gray-300 bg-gray-600 flex items-center justify-center">
     {contact.image ? (
         <img
