@@ -70,17 +70,6 @@ function App() {
       </Routes>
     </BrowserRouter>
 
-    
-  //   <BrowserRouter>
-  //   <Routes>
-  //     <Route path='/auth' element={<Auth />} />
-  //     <Route path='/chat' element={<Chat />} />
-  //     <Route path='/profile' element={<Profile />} />
-  //     <Route path='*' element={<Navigate to="/auth" />} />
-  //   </Routes>
-  // </BrowserRouter>
-
-   
   );
 }
 
