@@ -73,42 +73,6 @@ const MessageBar = () => {
 
 //     const response = await apiClient.post(UPLOAD_FILE_ROUTES , formData , {withCredentials:true})
 
-//     if (response.status === 200 && response.data) {
-//       if (selectedChatType === "contact") {
-//         const sendMessage = {
-//           sender: userInfo.id,
-//           content: undefined,
-//           recipient: selectedChatData._id,
-//           messageType: "file",
-//           fileUrl: response.data.filePath,
-//           timestamp: new Date().toISOString(),
-//         };
-    
-//         // Emit message
-//         socket.emit("sendMessage", sendMessage);
-//         console.log(sendMessage)
-
-    
-//       } else if (selectedChatType === "channel") {
-//         const sendMessage = {
-//           sender: userInfo.id,
-//           content: undefined,
-//           messageType: "file",
-//           fileUrl: response.data.filePath,
-//           timestamp: new Date().toISOString(),
-//           channelId : selectedChatData._id
-//         };
-//         socket.emit("sendMessage", sendMessage);
-//         console.log(sendMessage)
-//       }
-//     }
-//     console.log({file})
-//    }catch(error)
-//    {
-//     console.log({error});
-    
-//    }
-// }
 const handleAttachmentChange = async (event) => {
   try {
       const file = event.target.files[0];
